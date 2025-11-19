@@ -223,8 +223,7 @@
             const epNum = escapeHtml(String(ep.ep || ''));
             const epTitle = escapeHtml(ep.title || ('Episode ' + epNum));
             const thumb = escapeHtml(ep.thumb || 'default-thumb.jpg');
-            const episodeUrl = ep.shortlink ? ep.shortlink : `episode.html?series=${encodeURIComponent(slug)}&season=${encodeURIComponent(season)}&ep=${encodeURIComponent(ep.ep)}${lang?('&lang='+encodeURIComponent(lang)) : ''}`;
-            const extra = ep.shortlink ? 'target="_blank" rel="noopener"' : '';
+            const episodeUrl = `episode.html?series=${encodeURIComponent(slug)}&season=${encodeURIComponent(season)}&ep=${encodeURIComponent(ep.ep)}${lang?('&lang='+encodeURIComponent(lang)) : ''}`;
             return `
               <a class="pro-episode-card-pro reveal-item" href="${episodeUrl}" ${extra} tabindex="-1" aria-label="${epTitle}">
                 <div class="pro-ep-thumb-wrap-pro">
