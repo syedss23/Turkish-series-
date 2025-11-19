@@ -1,4 +1,4 @@
-// series.js — Shortlinks disabled, all other features intact
+// series.js - ready to replace (prevents auto-scrolling; opens series at top)
 (function () {
   'use strict';
 
@@ -207,8 +207,8 @@
             const epTitle = escapeHtml(ep.title || ('Episode ' + epNum));
             const thumb = escapeHtml(ep.thumb || 'default-thumb.jpg');
             
-            // 🔥 SHORTLINK DISABLED: All episodes go to episode.html
-            const episodeUrl = `episode.html?series=${encodeURIComponent(slug)}&season=${encodeURIComponent(season)}&ep=${encodeURIComponent(ep.ep)}${lang?('&lang='+encodeURIComponent(lang)) : ''}`;
+            // 🔥 SHORTLINK DISABLED: All go to episode.html
+            const episodeUrl = `episode.html?series=${encodeURIComponent(slug)}&season=${encodeURIComponent(season)}&ep=${encodeURIComponent(ep.ep)}${lang ? ('&lang=' + encodeURIComponent(lang)) : ''}`;
             
             return `
               <a class="pro-episode-card-pro reveal-item" href="${episodeUrl}" tabindex="-1" aria-label="${epTitle}">
