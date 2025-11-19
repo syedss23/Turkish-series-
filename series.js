@@ -1,4 +1,4 @@
-// series.js - Shortlinks disabled, all animations and tutorials kept
+// series.js - Shortlinks disabled, all features intact
 (function () {
   'use strict';
 
@@ -10,10 +10,38 @@
   const HOWTO_PROCESS_1 = `<iframe class="rumble" width="640" height="360" src="https://rumble.com/embed/v6yg466/?pub=4ni0h4" frameborder="0" allowfullscreen></iframe>`;
   const HOWTO_PROCESS_2 = `<iframe class="rumble" width="640" height="360" src="https://rumble.com/embed/v6yg45g/?pub=4ni0h4" frameborder="0" allowfullscreen></iframe>`;
 
+  function jsonFor(season) {
+    if (!slug) return null;
+    if (lang === 'dub') return `episode-data/${slug}-s${season}.json`;
+    if (lang && ['en', 'hi', 'ur'].includes(lang)) return `episode-data/${slug}-s${season}-${lang}.json`;
+    return `episode-data/${slug}-s${season}.json`;
+  }
+
   function bust(url) {
     const v = (qs.get('v') || '1');
     return url + (url.includes('?') ? '&' : '?') + 'v=' + encodeURIComponent(v);
   }
+
+  function toast(msg) {
+    try {
+      const t = document.createElement('div');
+      t.textContent = msg;
+      t.style.cssText = 'position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#122231;color:#9fe6ff;padding:10px 14px;border-radius:9px;border:1px solid #2d4b6a;font-weight:700;z-index:99999;font-family:Montserrat,sans-serif;';
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 2600);
+    } catch (e) { console.warn('toast error', e); }
+  }
+
+  // injected styles (keeps cards compact if no CSS update) + small animations
+  const injectedStyles = `
+    .pro-episodes-row-pro{ -webkit-overflow-scrolling: touch; }
+    .pro-episodes-row-wrap-pro { transition: min-height .18s ease; }
+    .pro-episodes-row-wrap-pro.is-loading { opacity: .72; pointer-events: none; filter: blur(.6px) contrast(.98); }
+    .pro-episode-card-pro { transition: transform .28s ease, opacity .28s ease; }
+    .reveal-item { opacity: 0; transform: translateY(10px); }
+    .reveal-item.show { opacity: 1; transform: translateY(0); }
+  `;
+  try { const s = document.createElement('style'); s.textContent = injectedStyles; document.head.appendChild(s); } catch(e){}
 
   function escapeHtml(s) {
     if (s === null || s === undefined) return '';
@@ -22,6 +50,7 @@
     });
   }
 
+  // Try several candidate episode JSON paths and return episodes + diagnostics
   async function fetchEpisodesWithCandidates(season) {
     const candidates = [
       `episode-data/${slug}-${lang}-sub-s${season}.json`,
@@ -183,10 +212,10 @@
             const epTitle = escapeHtml(ep.title || ('Episode ' + epNum));
             const thumb = escapeHtml(ep.thumb || 'default-thumb.jpg');
             
-            // ALWAYS go to episode.html (shortlink ignored)
+            // SHORTLINK DISABLED: All episodes now go to episode.html
             const episodeUrl = `episode.html?series=${encodeURIComponent(slug)}&season=${encodeURIComponent(season)}&ep=${encodeURIComponent(ep.ep)}${lang?('&lang='+encodeURIComponent(lang)) : ''}`;
             
-            // TO RE-ENABLE SHORTLINKS: Uncomment the line below
+            // TO RE-ENABLE SHORTLINKS: Uncomment the line below and comment the line above
             // const episodeUrl = ep.shortlink ? ep.shortlink : `episode.html?series=${encodeURIComponent(slug)}&season=${encodeURIComponent(season)}&ep=${encodeURIComponent(ep.ep)}${lang?('&lang='+encodeURIComponent(lang)) : ''}`;
             
             return `
@@ -211,7 +240,7 @@
 
           wrap.innerHTML = `<div class="pro-episodes-row-pro" role="list">${cardsHtml}</div>` + tutorialBlock;
 
-          // Smooth reveal animation
+          // Smooth reveal animation with stagger
           const scroller = wrap.querySelector('.pro-episodes-row-pro');
           if (scroller) {
             const items = Array.from(scroller.querySelectorAll('.reveal-item'));
