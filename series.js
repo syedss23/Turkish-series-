@@ -48,30 +48,29 @@
 
   function escapeHtml(s) {
     if (s === null || s === undefined) return '';
-    return String(s).replace(/[&<>"'`=\/]/g, function (c) {
+    return String(s).replace(/[&<>"'`=/]/g, function (c) {
       return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','/':'&#x2F;','`':'&#x60;','=':'&#x3D;' }[c];
     });
   }
 
   // Try several candidate episode JSON paths and return episodes + diagnostics
   async function fetchEpisodesWithCandidates(season) {
-  const candidates = [
-    `episode-data/${slug}-${lang}-sub-s${season}.json`,  // ADD THIS FIRST!
-    `episode-data/${slug}-s${season}.json`,
-    `episode-data/${slug}-s${season}-${lang}.json`,
-    `episode-data/${slug}-s${season}-en.json`,
-    `episode-data/${slug}-s${season}-hi.json`,
-    `episode-data/${slug}-s${season}-ur.json`,
-    `episode-data/${slug}-s${season}-sub.json`,
-    `episode-data/${slug}-s${season}-en-sub.json`
-    // REMOVE the last 2 lines with hardcoded "s1"
-  ].filter(Boolean);
+    const candidates = [
+      `episode-data/${slug}-${lang}-sub-s${season}.json`,
+      `episode-data/${slug}-s${season}.json`,
+      `episode-data/${slug}-s${season}-${lang}.json`,
+      `episode-data/${slug}-s${season}-en.json`,
+      `episode-data/${slug}-s${season}-hi.json`,
+      `episode-data/${slug}-s${season}-ur.json`,
+      `episode-data/${slug}-s${season}-sub.json`,
+      `episode-data/${slug}-s${season}-en-sub.json`
+    ].filter(Boolean);
 
     const tried = [];
 
     for (const cand of candidates) {
       try {
-        const path = cand.startsWith('/') ? cand : '/' + cand.replace(/^\/+/, '');
+        const path = cand.startsWith('/') ? cand : '/' + cand.replace(/^/+/, '');
         const url = bust(path);
         const resp = await fetch(url, { cache: 'no-cache' });
         const rec = { path: cand, ok: resp.ok, status: resp.status, err: null };
@@ -218,15 +217,24 @@
             return;
           }
 
-          // build compact carousel cards (add reveal-item class for animation)
+          // ═══════════════════════════════════════════════════════════════
+          // 🔥 CHANGED: SHORTLINK REDIRECT DISABLED - SPONSOR POPUP MODE
+          // ═══════════════════════════════════════════════════════════════
+          // Build episode cards - ALL go to episode.html (no shortlink redirect)
           const cardsHtml = episodes.map(ep => {
             const epNum = escapeHtml(String(ep.ep || ''));
             const epTitle = escapeHtml(ep.title || ('Episode ' + epNum));
             const thumb = escapeHtml(ep.thumb || 'default-thumb.jpg');
-            const episodeUrl = ep.shortlink ? ep.shortlink : `episode.html?series=${encodeURIComponent(slug)}&season=${encodeURIComponent(season)}&ep=${encodeURIComponent(ep.ep)}${lang?('&lang='+encodeURIComponent(lang)) : ''}`;
-            const extra = ep.shortlink ? 'target="_blank" rel="noopener"' : '';
+            
+            // SPONSOR MODE: Always go to episode.html, never to shortlink
+            // Shortlink data stays in JSON but is not used
+            const episodeUrl = `episode.html?series=${encodeURIComponent(slug)}&season=${encodeURIComponent(season)}&ep=${encodeURIComponent(ep.ep)}${lang?('&lang='+encodeURIComponent(lang)) : ''}`;
+            
+            // TO RE-ENABLE SHORTLINKS: Uncomment the line below and comment the line above
+            // const episodeUrl = ep.shortlink ? ep.shortlink : `episode.html?series=${encodeURIComponent(slug)}&season=${encodeURIComponent(season)}&ep=${encodeURIComponent(ep.ep)}${lang?('&lang='+encodeURIComponent(lang)) : ''}`;
+            
             return `
-              <a class="pro-episode-card-pro reveal-item" href="${episodeUrl}" ${extra} tabindex="-1" aria-label="${epTitle}">
+              <a class="pro-episode-card-pro reveal-item" href="${episodeUrl}" tabindex="-1" aria-label="${epTitle}">
                 <div class="pro-ep-thumb-wrap-pro">
                   <img class="pro-ep-thumb-pro" src="${thumb}" alt="${epTitle}">
                   <span class="pro-ep-num-pro">Ep ${epNum}</span>
@@ -235,6 +243,7 @@
               </a>
             `;
           }).join('');
+          // ═══════════════════════════════════════════════════════════════
 
           const tutorialBlock = `
             <div class="pro-tutorial-title">How to Watch Episodes</div>
@@ -267,30 +276,30 @@
 
           // do NOT auto-scroll. caller (initial load) already handled top-of-page.
         } catch (err) {
-  let errorMsg = 'No episodes found';
-  let details = '';
-  
-  if (err && err.tried && err.tried.length > 0) {
-    const lastTried = err.tried[err.tried.length - 1];
-    if (lastTried.err && lastTried.err.includes('json-parse')) {
-      errorMsg = 'JSON file has syntax error';
-      details = `Check file: ${lastTried.path}`;
-    } else if (!lastTried.ok) {
-      errorMsg = 'Episode file not found';
-      details = `Looking for: ${lastTried.path}`;
-    }
-  }
-  
-  wrap.innerHTML = `
-    <div style="background:#1a1f2e;color:#fff;padding:18px;border-radius:12px;border:1px solid #ff6b6b;">
-      <div style="font-size:16px;font-weight:700;color:#ff6b6b;margin-bottom:8px;">⚠️ ${errorMsg}</div>
-      ${details ? `<div style="font-size:13px;color:#aaa;font-family:monospace;">${details}</div>` : ''}
-    </div>
-  `;
-  
-  console.error('Episode load error:', err);
-  wrap.classList.remove('is-loading');
-  wrap.style.minHeight = prevMin;
+          let errorMsg = 'No episodes found';
+          let details = '';
+          
+          if (err && err.tried && err.tried.length > 0) {
+            const lastTried = err.tried[err.tried.length - 1];
+            if (lastTried.err && lastTried.err.includes('json-parse')) {
+              errorMsg = 'JSON file has syntax error';
+              details = `Check file: ${lastTried.path}`;
+            } else if (!lastTried.ok) {
+              errorMsg = 'Episode file not found';
+              details = `Looking for: ${lastTried.path}`;
+            }
+          }
+          
+          wrap.innerHTML = `
+            <div style="background:#1a1f2e;color:#fff;padding:18px;border-radius:12px;border:1px solid #ff6b6b;">
+              <div style="font-size:16px;font-weight:700;color:#ff6b6b;margin-bottom:8px;">⚠️ ${errorMsg}</div>
+              ${details ? `<div style="font-size:13px;color:#aaa;font-family:monospace;">${details}</div>` : ''}
+            </div>
+          `;
+          
+          console.error('Episode load error:', err);
+          wrap.classList.remove('is-loading');
+          wrap.style.minHeight = prevMin;
         }
       }
 
