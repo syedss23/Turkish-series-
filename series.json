@@ -1,0 +1,270 @@
+[
+  {
+    "id": 1,
+    "title": "Kuruluş: Orhan",
+    "slug": "kurulus-orhan",
+    "poster": "assets/posters/orhan.jpg",
+    "desc": {
+      "en": "The journey of Orhan Bey, first Sultan of the Ottoman Empire.",
+      "hi": "ऑटोमन साम्राज्य के संस्थापक उस्मान बेय की यात्रा।",
+      "ur": "عثمانی سلطنت کے بانی عثمان بے کا سفر۔"
+    },
+    "seasons": 1,
+    "track": "dubbed"
+  },
+  {
+    "id": 2,
+    "title": "Alp Arslan",
+    "slug": "alp-arslan",
+    "poster": "assets/posters/alp_arslan.jpg",
+    "desc": {
+      "en": "Story of Alp Arslan, the victorious Sultan of the Seljuk Empire.",
+      "hi": "सेल्ज़ुक साम्राज्य के विजयी सुलतान अल्प अर्सलान की कहानी।",
+      "ur": "سلجوقی سلطنت کے فاتح سلطان البرسلان کی کہانی۔"
+    },
+    "seasons": 2,
+    "track": "dubbed"
+  },
+  {
+    "id": 3,
+    "title": "Sultan Mehmet Fatih",
+    "slug": "sultan-mehmet-fatih",
+    "poster": "assets/posters/mehmet_fatih.jpg",
+    "desc": {
+      "en": "Life and conquests of Sultan Mehmet the Conqueror.",
+      "hi": "सुल्तान मेहमत فاتह के जीवन और विजय।",
+      "ur": "زندگی اور فتوحات سلطان مہمت فاتح۔"
+    },
+    "seasons": 2,
+    "track": "dubbed"
+  },
+  {
+    "id": 4,
+    "title": "Salauddin Ayyubi",
+    "slug": "salauddin-ayyubi",
+    "poster": "assets/posters/salauddin_ayyubi.jpg",
+    "desc": {
+      "en": "Epic tale of Salauddin Ayyubi and the Crusades.",
+      "hi": "स्लेडीन अय्यूबी और क्रूसेड्स की महागाथा।",
+      "ur": "سلاہدین ایوبی اور صلیبیوں کی رزمیہ داستان۔"
+    },
+    "seasons": 2,
+    "track": "dubbed"
+  },
+  {
+    "id": 5,
+    "title": "The Great Seljuk",
+    "slug": "the-great-seljuk",
+    "poster": "assets/posters/great_seljuk.jpg",
+    "desc": {
+      "en": "Drama on the rise and fall of the Seljuk Empire.",
+      "hi": "सेल्ज़ुक साम्राज्य के उत्थान और पतन पर नाटक।",
+      "ur": "سلجوقی سلطنت کے عروج و زوال پر ڈرامہ۔"
+    },
+    "seasons": 1,
+    "track": "dubbed"
+  },
+  {
+    "id": 6,
+    "title": "Moulana Jalaluddin Rumi",
+    "slug": "moulana-jalaluddin-rumi",
+    "poster": "assets/posters/rumi.jpg",
+    "desc": {
+      "en": "The life and poetry of the famous Sufi mystic, Jalaluddin Rumi.",
+      "hi": "प्रसिद्ध सूफ़ी रहस्यवादी जलालुद्दीन रूमी का जीवन और कविता।",
+      "ur": "مشہور صوفی شاعر جلال الدین رومی کی زندگی اور شاعری۔"
+    },
+    "seasons": 3,
+    "track": "dubbed"
+  },
+  {
+    "id": 7,
+    "title": "Barbarossa",
+    "slug": "barbarossa",
+    "poster": "assets/posters/barbarossa.jpg",
+    "desc": {
+      "en": "Epic story of the Barbaros brothers and Ottoman naval dominance.",
+      "hi": "बरबरोज़ भाइयों और उस्मानिया समुद्री विजय की महागाथा।",
+      "ur": "باربروسا بھائیوں اور عثمانی بحری برتری کی شاندار کہانی۔"
+    },
+    "seasons": 2,
+    "track": "dubbed"
+  },
+  {
+    "id": 8,
+    "title": "Haji Bayram Vali",
+    "slug": "haji-bayram-vali",
+    "poster": "assets/posters/haji_bayram_vali.jpg",
+    "desc": {
+      "en": "Dramatic life and spiritual journey of Haji Bayram Veli.",
+      "hi": "हाजी बायराम वली का जीवन और आध्यात्मिक यात्रा।",
+      "ur": "حاجی بیرام ولی کی زندگی اور روحانی سفر۔"
+    },
+    "seasons": 1,
+    "track": "dubbed"
+  },
+  {
+    "id": 9,
+    "title": "Destan",
+    "slug": "destan",
+    "poster": "assets/posters/destan.jpg",
+    "desc": {
+      "en": "Epic saga of Akkiz and Batuga in the Turkish steppes. Urdu dubbed episodes.",
+      "hi": "तुर्की मरुस्थल में अक्किज़ और बातूगा की ऐतिहासिक गाथा। उर्दू डब्ड।",
+      "ur": "ترکی کے میدانوں میں اککز اور باتوگا کی شاندار داستان۔ اردو ڈبbed."
+    },
+    "seasons": 1,
+    "track": "dubbed"
+  },
+  {
+    "id": 10,
+    "title": "Barbaros Hayreddin",
+    "slug": "barbaros-hayreddin",
+    "poster": "assets/posters/barbaros_hayreddin.jpg",
+    "desc": {
+      "en": "Legend of Barbaros Hayreddin, the Ottoman admiral. Urdu dubbed Turkish series.",
+      "hi": "बारबरोस हैरेद्दीन – उस्मानिया एडमिरल की महागाथा। तुर्की सीरीज, उर्दू डब्ड।",
+      "ur": "باربروس ہےریددین، عثمانی بحری ایڈمرل کی شاندار کہانی۔ اردو ڈبbed ترکش سیریز."
+    },
+    "seasons": 1,
+    "track": "dubbed"
+  },
+    {
+    "id": 11,
+    "title": "Hz Abdul Qader Gilani(R.A)",
+    "slug": "abdul-qader-gilani",
+    "poster": "assets/posters/abdul_qader_gilani.jpg",
+    "desc": {
+      "en": "Hey Sultan (Hay Sultan) is a historical drama that follows the life of Abdul Qadir Gilani, a great Sufi scholar who returns to Baghdad to restore justice and guide people through faith and wisdom.",
+      "hi": "स्लेडीन अय्यूबी और क्रूसेड्स की महागाथा।",
+      "ur": "سلاہدین ایوبی اور صلیبیوں کی رزمیہ داستان۔"
+    },
+    "seasons": 2,
+    "track": "dubbed"
+    },
+  {
+    "id": 12,
+    "title": "Golden Apple (Sultan Mehmet)",
+    "slug": "golden-apple",
+    "poster": "assets/posters/golden_apple.jpg",
+    "desc": {
+      "en": "Golden Apple: The Grand Conquest (on Tabii) is a historical series about Sultan Mehmed II’s ambition to conquer Constantinople, and how his mentor Akşemseddin guides him in that quest.",
+      "hi": "स्लेडीन अय्यूबी और क्रूसेड्स की महागाथा।",
+      "ur": "سلاہدین ایوبی اور صلیبیوں کی رزمیہ داستان۔"
+    },
+    "seasons": 1,
+    "track": "dubbed"
+    },
+  {
+    "id": 13,
+    "title": "Akif",
+    "slug": "akif",
+    "poster": "assets/posters/akif.jpg",
+    "desc": {
+      "en": "The life story of Mehmet Akif Ersoy, one of the greatest poets and man of letters of Türkiye who wrote the Turkish National Anthem.",
+      "hi": "बारबरोस हैरेद्दीन – उस्मानिया एडमिरल की महागाथा। तुर्की सीरीज, उर्दू डब्ड।",
+      "ur": "باربروس ہےریددین، عثمانی بحری ایڈمرل کی شاندار کہانی۔ اردو ڈبbed ترکش سیریز."
+    },
+    "seasons": 1,
+    "track": "dubbed"
+    },
+  {
+    "id": 14,
+    "title": "Land Of Loyal's (Muhafiz-E-Watan)",
+    "slug": "land-of-loyals",
+    "poster": "assets/posters/land.jpg",
+    "desc": {
+      "en": "Land of Loyals Muhafiz e Watan is an epic Turkish historical drama that tells the story of Mustafa, a brave and loyal warrior who dedicates his life to protecting his watan (homeland) and his faith (imaan).",
+      "hi": "बारबरोस हैरेद्दीन – उस्मानिया एडमिरल की महागाथा। तुर्की सीरीज, उर्दू डब्ड।",
+      "ur": "باربروس ہےریددین، عثمانی بحری ایڈمرل کی شاندار کہانی۔ اردو ڈبbed ترکش سیریز."
+    },
+    "seasons": 2,
+    "track": "dubbed"
+    },
+  {
+    "id": 15,
+    "title": "Mehmetcik (Battle of Glory)",
+    "slug": "mehmetcik",
+    "poster": "assets/posters/mehmetcik.jpg",
+    "desc": {
+      "en": "Follow the brave journey of Mehmet, a fearless soldier of the Ottoman Empire, who fights with faith and courage to protect his homeland during World War I. A tale of sacrifice, honor, and brotherhood.",
+      "hi": "बारबरोस हैरेद्दीन – उस्मानिया एडमिरल की महागाथा। तुर्की सीरीज, उर्दू डब्ड।",
+      "ur": "باربروس ہےریددین، عثمانی بحری ایڈمرل کی شاندار کہانی۔ اردو ڈبbed ترکش سیریز."
+    },
+    "seasons": 1,
+    "track": "dubbed"
+    },
+  {
+    "id": 16,
+    "title": "Young Ibn-e-Sina",
+    "slug": "young-ibn-sina",
+    "poster": "assets/posters/sina.jpg",
+    "desc": {
+      "en": "Ibn Sina, or Avicenna, is a curious young prodigy who is always preoccupied with inventions and doing right by everybody. He has an unquenchable appetite for innovation, ethics and knowledge. The show chronicles this world-famous scientist’s larger-than-life –and at times quirky- personality whose works paved the way of modern medicine and astronomy in the world.",
+      "hi": "सेल्ज़ुक साम्राज्य के विजयी सुलतान अल्प अर्सलान की कहानी।",
+      "ur": "سلجوقی سلطنت کے فاتح سلطان البرسلان کی کہانی۔"
+    },
+    "seasons": 2,
+    "track": "dubbed"
+  },
+  {
+    "id": 101,
+    "title": "Kuruluş: Orhan (English Subtitles)",
+    "slug": "kurulus-orhan-en",
+    "poster": "assets/posters/orhan.jpg",
+    "desc": { "en": "Kuruluş: Orhan with English subtitles." },
+    "seasons": 1,
+    "track": "sub",
+    "subLang": "en"
+  },
+  {
+    "id": 102,
+    "title": "Kuruluş: Orhan (Hindi Subtitles)",
+    "slug": "kurulus-orhan-hi",
+    "poster": "assets/posters/orhan.jpg",
+    "desc": { "en": "Kuruluş: Orhan with Hindi subtitles." },
+    "seasons": 1,
+    "track": "sub",
+    "subLang": "hi"
+  },
+  {
+    "id": 103,
+    "title": "Kuruluş: Orhan (Urdu Subtitles)",
+    "slug": "kurulus-orhan-ur",
+    "poster": "assets/posters/orhan.jpg",
+    "desc": { "en": "Kuruluş: Orhan with Urdu subtitles." },
+    "seasons": 1,
+    "track": "sub",
+    "subLang": "ur"
+  },
+  {
+    "id": 201,
+    "title": "Sultan Mehmet Fatih (English Subtitles)",
+    "slug": "sultan-mehmet-fatih-en-sub",
+    "poster": "assets/posters/mehmet_fatih_en.jpg",
+    "desc": { "en": "Sultan Mehmet Fatih with English subtitles." },
+    "seasons": 3,
+    "track": "sub",
+    "subLang": "en"
+  },
+  {
+    "id": 202,
+    "title": "Sultan Mehmet Fatih (Hindi Subtitles)",
+    "slug": "sultan-mehmet-fatih-hi-sub",
+    "poster": "assets/posters/mehmet_fatih_hi.jpg",
+    "desc": { "en": "Sultan Mehmet Fatih with Hindi subtitles." },
+    "seasons": 3,
+    "track": "sub",
+    "subLang": "hi"
+  },
+  {
+    "id": 203,
+    "title": "Sultan Mehmet Fatih (Urdu Subtitles)",
+    "slug": "sultan-mehmet-fatih-ur-sub",
+    "poster": "assets/posters/mehmet_fatih_ur.jpg",
+    "desc": { "en": "Sultan Mehmet Fatih with Urdu subtitles." },
+    "seasons": 3,
+    "track": "sub",
+    "subLang": "ur"
+  }
+]

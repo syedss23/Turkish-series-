@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SmTv Urdu - Watch Turkish Series in Urdu | SMTV Urdu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SmTv Urdu: Watch Turkish historical series, Islamic serials, and new releases (like Salahuddin Ayyubi Season 2 and Mehmet Fatih Season 2) in Urdu language.">
+  <meta name="theme-color" content="#0d171f">
+  <!-- Open Graph -->
+  <meta property="og:title" content="SmTv Urdu">
+  <meta property="og:site_name" content="SmTv Urdu">
+  <meta property="og:description" content="Watch Urdu dubbed Turkish Series, Islamic serials & new Turkish drama releases. Join SmTv Urdu for all episodes with Urdu subtitles.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://smtvurdu.site/assets/posters/smtv_promo.jpg">
+  <meta property="og:url" content="https://smtvurdu.site">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="canonical" href="https://smtvurdu.site/">
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "SmTv Urdu",
+    "url": "https://smtvurdu.site",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://smtvurdu.site/?s={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "SmTv Urdu",
+    "url": "https://smtvurdu.site",
+    "logo": "https://smtvurdu.site/assets/logo.png"
+  }
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-WM3KEDD127"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-WM3KEDD127');
+  </script>
+  <!-- Fonts & Styles -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    html { scroll-behavior: smooth; }
+    .schedule-bar {
+      display: flex; align-items: center; overflow-x: auto; gap: 16px;
+      background: #232f3e; border-radius: 9px; box-shadow: 0 1px 8px #0003;
+      padding: 7px 12px; margin: 13px 16px 6px 16px; min-height: 42px;
+    }
+    .schedule-entry {
+      display: flex; align-items: center; gap: 8px;
+      background: #101a24; border-radius: 7px; box-shadow: 0 1px 6px #0003;
+      padding: 4px 11px 4px 6px; font-family: 'Montserrat',sans-serif;
+      font-weight: 500; font-size: 0.96em; color: #ffd700; white-space: nowrap;
+      line-height: 1.25;
+    }
+    .schedule-entry img {
+      width: 27px; height: 27px; object-fit: cover; border-radius: 5px; margin-right: 4px;
+      box-shadow: 0 1px 8px #ffd70026; border: 1.2px solid #ffd70025;
+    }
+    .schedule-entry .title { color:#23c6ed;font-weight:700;margin-right:4px; }
+    .schedule-entry .days { color:#ffe493; margin-left:4px; font-size:0.92em; }
+    .schedule-entry .time { color:#ffd700; font-size:0.97em; margin-left:3px; }
+
+    .new-episodes-section {
+      background: radial-gradient(circle at 34% 36%, #232f3e 74%, #101a24 100%);
+      margin: 28px 0 16px 0; border-radius: 16px;
+      box-shadow: 0 5px 22px #0007, 0 2px 10px #ffd70033; padding: 28px 0 13px 0;
+    }
+    .new-episodes-section h2 {
+      font-family:'Montserrat',sans-serif; font-weight:700; font-size:1.17em;
+      margin:0 0 18px 26px; color:#ffd700; letter-spacing:.07em;
+      text-shadow:0 2px 8px #ffe49344, 0 1px 6px #1930407a; display:flex; align-items:center;
+    }
+    .new-episodes-grid { display:flex; flex-wrap:wrap; gap:18px; justify-content:flex-start; padding:0 24px 14px 24px; min-height:120px; }
+    .episode-card-pro {
+      background: linear-gradient(135deg,#1a232b 85%,#ffd7001b 100%);
+      border-radius:12px; box-shadow:0 3px 18px #0005, 0 1px 7px #ffd70030;
+      width:165px; min-width:110px; max-width:184px; overflow:hidden; display:flex; flex-direction:column; align-items:center; position:relative; transition:box-shadow .2s;
+    }
+    .episode-card-pro:hover { box-shadow:0 8px 32px #ffd70048, 0 4px 26px #212f4055; }
+    .episode-img-pro { width:100%; height:92px; object-fit:cover; border-radius:11px 11px 0 0; box-shadow:0 2px 10px #ffd70016; }
+    .series-title-pro { font-family:'Montserrat',sans-serif; font-weight:600; color:#23c6ed; text-align:center; font-size:1.12em; margin:10px 0 0; letter-spacing:.02em; }
+    .episode-title-pro { color:#ffd700; font-family:'Montserrat',sans-serif; font-weight:800; font-size:1.02em; text-align:center; margin:5px 0 0; letter-spacing:.01em; text-shadow:0 1px 6px #1a232b42; }
+    .new-badge-pro { background:#ffd700; color:#232f3e; font-family:'Montserrat',sans-serif; font-weight:700; font-size:.8em; border-radius:7px; padding:2px 11px; margin-left:8px; box-shadow:0 0 14px #ffd70038; }
+    .watch-btn-pro { margin:14px 0; color:#fff; background:linear-gradient(90deg,#198fff 70%, #ffd700 100%); border-radius:8px; padding:10px 30px; text-decoration:none; font-family:'Montserrat',sans-serif; font-weight:600; font-size:1em; box-shadow:0 1px 9px #198fff22; border:none; transition:background .2s; cursor:pointer; }
+    .watch-btn-pro:hover { background:linear-gradient(90deg,#ffd700 28%,#198fff 100%); color:#1a232b; box-shadow:0 3px 24px #ffd70042; }
+    @media (max-width:600px){
+      .schedule-bar{ margin:7px 4px 5px 4px; padding:6px 3px; gap:7px; min-height:32px; }
+      .schedule-entry{ padding:2px 5px 2px 2px; gap:4px; font-size:0.9em; }
+      .schedule-entry img{ width:17px;height:17px; }
+      .new-episodes-grid{ gap:7px; padding:0 6px 12px 6px; }
+      .episode-card-pro{ width:44vw; min-width:90px; }
+      .episode-img-pro{ height:60px; }
+      .new-episodes-section h2{ margin:7px 0 9px 8px; font-size:1em; }
+    }
+  </style>
+  <script defer src="index.js"></script>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div id="sidebar" class="sidebar">
+    <div class="sidebar-header-pro">
+      <span class="sidebar-logo-pro">SmTv Urdu</span>
+      <button id="sidebarClose" class="sidebar-close-btn" aria-label="Close menu">&times;</button>
+    </div>
+    <nav class="sidebar-menu-pro">
+      <a href="/" class="sidebar-btn-pro">🏠 Home</a>
+      <a href="#" id="sidebarDubbed" class="sidebar-btn-pro">🌐 Dubbed Series</a>
+      <a href="#" id="sidebarSubtitles" class="sidebar-btn-pro">📝 Subtitles Series</a>
+      <a href="https://t.me/smtv_official1" target="_blank" class="sidebar-btn-pro telegram-pro">📢 Telegram Channel</a>
+      <a href="https://whatsapp.com/channel/0029Va9zAvvAYlUNRuzWqh0k" target="_blank" class="sidebar-btn-pro whatsapp-pro">💬 WhatsApp Channel</a>
+    </nav>
+  </div>
+
+  <div id="main-content">
+    <!-- Single header (with Premium button) -->
+    <header id="site-header">
+      <button id="sidebarToggle" aria-label="Open menu">&#9776;</button>
+      <h1 id="mainTitle" style="display:inline-block; font-family:'Montserrat',sans-serif; font-weight:700; color:#fff; margin:0;">SmTv Urdu</h1>
+      <a class="premium-cta" href="/premium" rel="noopener">Premium</a>
+    </header>
+
+    <!-- Search -->
+    <div class="searchbar-container">
+      <span class="search-icon">&#128269;</span>
+      <input type="text" id="search" placeholder="Search SmTv Urdu..." autocomplete="off" aria-label="Search series">
+    </div>
+
+    <!-- Filter bar -->
+    <div class="filter-bar" id="dubbed">
+      <div class="primary">
+        <button id="pill-dub" class="pill active" aria-pressed="true">Dubbed</button>
+        <button id="pill-sub" class="pill" aria-pressed="false">Subtitles</button>
+      </div>
+      <div id="sub-langs" class="secondary" aria-label="Subtitle languages">
+        <button class="pill" data-lang="en" aria-pressed="true">English</button>
+        <button class="pill" data-lang="hi" aria-pressed="false">Hindi</button>
+        <button class="pill" data-lang="ur" aria-pressed="false">Urdu</button>
+      </div>
+    </div>
+
+    <!-- Schedule -->
+    <div id="schedule-bar"></div>
+
+    <!-- New Episodes -->
+    <section class="new-episodes-section" aria-label="New Episodes">
+      <h2><span style="margin-right:10px;">✨</span> New Episodes</h2>
+      <div id="new-episodes-grid" class="new-episodes-grid" aria-live="polite"></div>
+    </section>
+
+    <!-- Series grid -->
+    <div id="series-grid" class="series-grid" aria-live="polite"></div>
+  </div>
+
+  <script>
+    // Sidebar filter activation logic
+    document.getElementById('sidebarDubbed').addEventListener('click', function(e) {
+      e.preventDefault();
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('pill-dub').click();
+    });
+    document.getElementById('sidebarSubtitles').addEventListener('click', function(e) {
+      e.preventDefault();
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('pill-sub').click();
+    });
+  </script>
+  <!-- Footer Include -->
+<div id="footer-placeholder"></div>
+<script>
+(async function loadFooterAndInit(){
+  // wait until page load completes (helps avoid conflicts)
+  if (document.readyState !== 'complete') {
+    await new Promise(resolve => window.addEventListener('load', resolve, { once: true }));
+  }
+  try {
+    const res = await fetch('/includes/footer.html');
+    if (!res.ok) throw new Error('Footer not found: ' + res.status);
+    const html = await res.text();
+    const ph = document.getElementById('footer-placeholder');
+    ph.innerHTML = html;
+
+    // initialize active logic and click handlers
+    const nav = document.getElementById('smtv-bottom-nav');
+    if(!nav) return;
+    const items = Array.from(nav.querySelectorAll('.nav-item'));
+    function clearActive(){ items.forEach(i=>i.classList.remove('active')); }
+
+    // match by pathname
+    const path = window.location.pathname.toLowerCase();
+    let matched = items.find(a => {
+      const name = (a.dataset.name||'').toLowerCase();
+      if (name === 'home' && (path === '/' || path.includes('index'))) return true;
+      return name && path.includes(name);
+    });
+
+    // fallback to last clicked
+    if(!matched){
+      const last = localStorage.getItem('smtv_last_nav');
+      if(last) matched = items.find(a => a.dataset.name === last);
+    }
+    if(matched) matched.classList.add('active');
+
+    // click handlers: immediate feedback + fallback navigation
+    items.forEach(a => {
+      a.addEventListener('click', function(e){
+        clearActive();
+        this.classList.add('active');
+        try { localStorage.setItem('smtv_last_nav', this.dataset.name); } catch(e){}
+        const href = this.getAttribute('href');
+        setTimeout(()=> {
+          if (location.pathname.toLowerCase() !== new URL(href, location.origin).pathname.toLowerCase()) {
+            location.href = href;
+          }
+        }, 200);
+      }, { passive: true });
+    });
+
+    // ensure body has enough bottom padding so content not hidden
+    try {
+      const curPad = parseInt(getComputedStyle(document.body).paddingBottom)||0;
+      if(curPad < 96) document.body.style.paddingBottom = 'calc(96px + env(safe-area-inset-bottom))';
+    } catch(e){}
+
+  } catch(err) {
+    console.warn('Footer load/init error:', err);
+  }
+})();
+</script>
+</body>
+</html>
