@@ -1,4 +1,4 @@
-// series.js - Shortlinks disabled, all features intact
+// series.js — Shortlinks disabled, all other features intact
 (function () {
   'use strict';
 
@@ -32,7 +32,6 @@
     } catch (e) { console.warn('toast error', e); }
   }
 
-  // injected styles (keeps cards compact if no CSS update) + small animations
   const injectedStyles = `
     .pro-episodes-row-pro{ -webkit-overflow-scrolling: touch; }
     .pro-episodes-row-wrap-pro { transition: min-height .18s ease; }
@@ -50,7 +49,6 @@
     });
   }
 
-  // Try several candidate episode JSON paths and return episodes + diagnostics
   async function fetchEpisodesWithCandidates(season) {
     const candidates = [
       `episode-data/${slug}-${lang}-sub-s${season}.json`,
@@ -204,19 +202,13 @@
             return;
           }
 
-          // ═══════════════════════════════════════════════════════════════
-          // 🔥 SHORTLINKS DISABLED - ALL EPISODES GO TO episode.html
-          // ═══════════════════════════════════════════════════════════════
           const cardsHtml = episodes.map(ep => {
             const epNum = escapeHtml(String(ep.ep || ''));
             const epTitle = escapeHtml(ep.title || ('Episode ' + epNum));
             const thumb = escapeHtml(ep.thumb || 'default-thumb.jpg');
             
-            // SHORTLINK DISABLED: All episodes now go to episode.html
+            // 🔥 SHORTLINK DISABLED: All episodes go to episode.html
             const episodeUrl = `episode.html?series=${encodeURIComponent(slug)}&season=${encodeURIComponent(season)}&ep=${encodeURIComponent(ep.ep)}${lang?('&lang='+encodeURIComponent(lang)) : ''}`;
-            
-            // TO RE-ENABLE SHORTLINKS: Uncomment the line below and comment the line above
-            // const episodeUrl = ep.shortlink ? ep.shortlink : `episode.html?series=${encodeURIComponent(slug)}&season=${encodeURIComponent(season)}&ep=${encodeURIComponent(ep.ep)}${lang?('&lang='+encodeURIComponent(lang)) : ''}`;
             
             return `
               <a class="pro-episode-card-pro reveal-item" href="${episodeUrl}" tabindex="-1" aria-label="${epTitle}">
@@ -228,7 +220,6 @@
               </a>
             `;
           }).join('');
-          // ═══════════════════════════════════════════════════════════════
 
           const tutorialBlock = `
             <div class="pro-tutorial-title">How to Watch Episodes</div>
@@ -240,7 +231,6 @@
 
           wrap.innerHTML = `<div class="pro-episodes-row-pro" role="list">${cardsHtml}</div>` + tutorialBlock;
 
-          // Smooth reveal animation with stagger
           const scroller = wrap.querySelector('.pro-episodes-row-pro');
           if (scroller) {
             const items = Array.from(scroller.querySelectorAll('.reveal-item'));
