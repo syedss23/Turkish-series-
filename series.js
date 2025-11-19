@@ -1,3 +1,5 @@
+console.log('✅ series.js LOADED successfully');
+alert('series.js is working!');
 // series.js - ready to replace (prevents auto-scrolling; opens series at top)
 (function () {
   'use strict';
