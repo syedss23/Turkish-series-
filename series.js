@@ -218,20 +218,21 @@
           }
 
           // ═══════════════════════════════════════════════════════════════
-          // 🔥 CHANGED: SHORTLINK REDIRECT DISABLED - SPONSOR POPUP MODE
+          // 🔥 SPONSOR MODE: SHORTLINK REDIRECT DISABLED
           // ═══════════════════════════════════════════════════════════════
-          // Build episode cards - ALL go to episode.html (no shortlink redirect)
+          // build compact carousel cards (add reveal-item class for animation)
           const cardsHtml = episodes.map(ep => {
             const epNum = escapeHtml(String(ep.ep || ''));
             const epTitle = escapeHtml(ep.title || ('Episode ' + epNum));
             const thumb = escapeHtml(ep.thumb || 'default-thumb.jpg');
             
-            // SPONSOR MODE: Always go to episode.html, never to shortlink
-            // Shortlink data stays in JSON but is not used
+            // All episodes now go to episode.html where sponsor popup appears
+            // Shortlink data remains in JSON but is NOT used
             const episodeUrl = `episode.html?series=${encodeURIComponent(slug)}&season=${encodeURIComponent(season)}&ep=${encodeURIComponent(ep.ep)}${lang?('&lang='+encodeURIComponent(lang)) : ''}`;
             
-            // TO RE-ENABLE SHORTLINKS: Uncomment the line below and comment the line above
+            // TO RE-ENABLE SHORTLINKS: Uncomment the 2 lines below and comment out the line above
             // const episodeUrl = ep.shortlink ? ep.shortlink : `episode.html?series=${encodeURIComponent(slug)}&season=${encodeURIComponent(season)}&ep=${encodeURIComponent(ep.ep)}${lang?('&lang='+encodeURIComponent(lang)) : ''}`;
+            // const extra = ep.shortlink ? 'target="_blank" rel="noopener"' : '';
             
             return `
               <a class="pro-episode-card-pro reveal-item" href="${episodeUrl}" tabindex="-1" aria-label="${epTitle}">
