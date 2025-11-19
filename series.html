@@ -80,7 +80,6 @@
       font-size:16px;
       box-shadow: 0 6px 20px rgba(0,0,0,0.45) inset;
       outline: none;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .pro-season-tab-pro.active {
       background: linear-gradient(90deg,#29f0ff,#00a9ff);
@@ -90,15 +89,7 @@
     }
 
     /* Episodes container */
-    .pro-episodes-row-wrap-pro { 
-      margin-top:16px; 
-      transition: min-height .18s ease;
-    }
-    .pro-episodes-row-wrap-pro.is-loading { 
-      opacity: .72; 
-      pointer-events: none; 
-      filter: blur(.6px) contrast(.98);
-    }
+    .pro-episodes-row-wrap-pro { margin-top:16px; }
 
     /* horizontal scroller */
     .pro-episodes-row-pro {
@@ -128,7 +119,7 @@
       background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.06));
       box-shadow: 0 10px 30px rgba(0,0,0,0.45);
       min-height:200px;
-      transition:transform .28s ease, opacity .28s ease;
+      transition:transform .14s ease, box-shadow .14s ease;
       position:relative;
     }
     @media (max-width:420px) {
@@ -136,16 +127,6 @@
     }
     @media (min-width:900px) {
       .pro-episode-card-pro { flex:0 0 200px; min-height:220px; }
-    }
-
-    /* Reveal animation */
-    .reveal-item { 
-      opacity: 0; 
-      transform: translateY(10px);
-    }
-    .reveal-item.show { 
-      opacity: 1; 
-      transform: translateY(0); 
     }
 
     /* thumbnail area - fixed square so image visible */
@@ -249,23 +230,31 @@
       border-radius:10px;
       box-shadow: 0 8px 18px rgba(0,0,0,0.35);
     }
-    .pro-video-frame-wrap { 
-      margin-top:12px; 
-      border-radius:10px; 
-      overflow:hidden;
-      position: relative;
-      width: 100%;
-      padding-bottom: 56.25%;
-      height: 0;
+    .pro-video-frame-wrap { margin-top:12px; border-radius:10px; overflow:hidden; }
+
+    /* Tutorial hero + cards (Google-like) */
+    .pro-tutorial-wrap { max-width:920px; margin:32px auto; padding:0 14px; }
+    .pro-tutorial-hero {
+      display:flex;
+      gap:14px;
+      align-items:center;
+      padding:18px 20px;
+      border-radius:14px;
+      background: linear-gradient(90deg, rgba(34,193,195,0.06), rgba(59,130,246,0.03));
+      box-shadow: 0 12px 36px rgba(6,30,60,0.36);
+      border: 1px solid rgba(255,255,255,0.03);
+      margin-bottom:10px;
     }
-    .pro-video-frame-wrap iframe {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      border: 0;
-    }
+    .pro-tutorial-hero .icon { flex:0 0 56px; height:56px; display:inline-grid; place-items:center; border-radius:12px; background: linear-gradient(180deg,#00c6ff22,#0077b622); box-shadow: 0 8px 24px rgba(2,120,180,0.12), inset 0 1px 0 rgba(255,255,255,0.02); }
+    .pro-tutorial-hero .icon svg { width:28px; height:28px; display:block; color:#00d7ff; }
+    .pro-tutorial-hero h3 { margin:0; font-size:1.8rem; font-weight:800; line-height:1.05; color:#ffffff; letter-spacing:-0.01em; text-shadow: 0 6px 28px rgba(0,120,160,0.08); }
+    .pro-tutorial-hero p { margin:4px 0 0 0; color:#cfeefc; opacity:0.95; font-weight:600; font-size:0.98rem; }
+    .pro-tutorial-card { background: linear-gradient(180deg,#0f2430 0%, #0b1b28 100%); border-radius:14px; padding:14px; border: 1px solid rgba(15,30,40,0.45); box-shadow: 0 10px 28px rgba(2,12,20,0.6); overflow:hidden; margin-bottom:26px; }
+    .pro-tutorial-card .small-title { font-size:1.08rem; font-weight:700; color:#e6f7ff; margin:6px 6px 8px 6px; text-shadow: 0 2px 8px rgba(0,0,0,0.35); }
+    .pro-tutorial-card .pro-video-frame-wrap { position:relative; width:100%; height:0; padding-bottom:56.25%; border-radius:10px; overflow:hidden; border:1px solid rgba(255,255,255,0.03); box-shadow: inset 0 1px 0 rgba(255,255,255,0.02), 0 6px 18px rgba(0,0,0,0.55); }
+    .pro-tutorial-card iframe { position:absolute; top:0; left:0; width:100%; height:100%; border:0; display:block; background:#000; }
+    @media (max-width:680px) { .pro-tutorial-hero { padding:12px; gap:10px; } .pro-tutorial-hero h3 { font-size:1.35rem; } .pro-tutorial-hero .icon { width:46px; height:46px; } .pro-tutorial-wrap { padding:0 10px; } }
+    .pro-tutorial-hero::after{ content:""; display:block; height:6px; margin-top:12px; border-radius:6px; background: linear-gradient(90deg, rgba(34,193,195,0.9), rgba(59,130,246,0.9)); opacity:0.08; }
 
     /* Keep small bottom padding so no large empty area after scroller */
     .pro-episodes-row-wrap-pro { padding-bottom:8px; margin-bottom:6px; }
