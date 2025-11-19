@@ -15,12 +15,19 @@
   <link rel="stylesheet" href="style.css">
   
   <style>
-    /* Make sure episode view is visible */
+    body {
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+    
+    /* Episode view - always visible */
     #episode-view {
+      min-height: 100vh;
       transition: filter 0.3s ease;
     }
     
-    /* Unlock Popup */
+    /* Unlock Popup - Transparent blur overlay */
     #unlockPopup {
       display: none;
       position: fixed;
@@ -28,9 +35,10 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.85);
-      backdrop-filter: blur(10px);
-      z-index: 9999;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 99999;
       overflow-y: auto;
       padding: 20px;
     }
@@ -45,11 +53,11 @@
     .popup-card {
       max-width: 450px;
       width: 100%;
-      background: linear-gradient(180deg, #1a1f2e 0%, #0f1419 100%);
+      background: rgba(26, 31, 46, 0.95);
       border-radius: 20px;
       padding: 35px;
-      box-shadow: 0 25px 70px rgba(0, 208, 240, 0.2);
-      border: 2px solid rgba(0, 208, 240, 0.3);
+      box-shadow: 0 25px 70px rgba(0, 208, 240, 0.3);
+      border: 2px solid rgba(0, 208, 240, 0.4);
       position: relative;
     }
     
@@ -71,13 +79,13 @@
       margin: 0;
     }
     
-    /* Sponsor 1 Section */
+    /* Sponsor Section */
     .sponsor-section {
-      background: rgba(0, 208, 240, 0.05);
+      background: rgba(0, 208, 240, 0.08);
       border-radius: 15px;
       padding: 25px;
       margin-bottom: 20px;
-      border: 1px solid rgba(0, 208, 240, 0.15);
+      border: 1px solid rgba(0, 208, 240, 0.2);
     }
     
     .sponsor-section h3 {
@@ -136,12 +144,12 @@
       font-size: 20px;
     }
     
-    /* Sponsor 2 - Contact Section */
+    /* Contact Section */
     .contact-section {
-      background: linear-gradient(135deg, rgba(255, 212, 0, 0.08) 0%, rgba(255, 179, 87, 0.08) 100%);
+      background: rgba(255, 212, 0, 0.1);
       border-radius: 15px;
       padding: 25px;
-      border: 1px solid rgba(255, 212, 0, 0.25);
+      border: 1px solid rgba(255, 212, 0, 0.3);
       text-align: center;
     }
     
@@ -177,6 +185,44 @@
       box-shadow: 0 12px 35px rgba(255, 212, 0, 0.5);
     }
     
+    /* Timer Section */
+    .timer-section {
+      display: none;
+      text-align: center;
+      padding: 40px 20px;
+    }
+    
+    .timer-message {
+      color: #00d0f0;
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+    
+    .timer-display {
+      font-size: 80px;
+      font-weight: 900;
+      color: #ff3333;
+      text-shadow: 0 0 30px rgba(255, 51, 51, 0.8),
+                   0 0 60px rgba(255, 51, 51, 0.6),
+                   0 0 90px rgba(255, 51, 51, 0.4);
+      animation: glow 1s ease-in-out infinite alternate;
+      line-height: 1;
+    }
+    
+    @keyframes glow {
+      from {
+        text-shadow: 0 0 20px rgba(255, 51, 51, 0.8),
+                     0 0 40px rgba(255, 51, 51, 0.6),
+                     0 0 60px rgba(255, 51, 51, 0.4);
+      }
+      to {
+        text-shadow: 0 0 30px rgba(255, 51, 51, 1),
+                     0 0 60px rgba(255, 51, 51, 0.8),
+                     0 0 90px rgba(255, 51, 51, 0.6);
+      }
+    }
+    
     @media (max-width: 500px) {
       .popup-card {
         padding: 25px;
@@ -187,6 +233,9 @@
       .sponsor-brand {
         font-size: 20px;
       }
+      .timer-display {
+        font-size: 60px;
+      }
     }
   </style>
   
@@ -194,117 +243,138 @@
   <script defer src="episode.js"></script>
 </head>
 <body>
-  <!-- Episode Player (Loads first, shows in background) -->
+  <!-- Episode Player (Always visible in background) -->
   <div id="episode-view"></div>
 
-  <!-- Unlock Popup (Shows on top after episode loads) -->
+  <!-- Unlock Popup (Transparent blur overlay) -->
   <div id="unlockPopup">
     <div class="popup-container">
       <div class="popup-card">
-        <div class="popup-header">
-          <h2>🔓 Unlock Episode</h2>
-          <p>Support our sponsors to watch this episode for free!</p>
-        </div>
         
-        <!-- Sponsor Section 1 -->
-        <div class="sponsor-section">
-          <h3>Episode Sponsored by</h3>
-          <div class="sponsor-brand">SmTv Urdu</div>
-          <p style="color:#cfd8df;text-align:center;margin:0 0 18px 0;font-size:14px;">Follow our sponsor to unlock this episode</p>
+        <!-- Main Popup Content -->
+        <div id="mainContent">
+          <div class="popup-header">
+            <h2>🔓 Unlock Episode</h2>
+            <p>Support our sponsors to watch this episode for free!</p>
+          </div>
           
-          <div class="sponsor-buttons">
-            <!-- Change to your social media link -->
-            <a href="https://whatsapp.com/channel/0029Va9zAvvAYlUNRuzWqh0k" 
-               target="_blank" 
-               class="sponsor-btn whatsapp" 
-               id="socialBtn">
-              <i class="fab fa-whatsapp"></i>
-              Join WhatsApp Channel
-            </a>
+          <div class="sponsor-section">
+            <h3>Episode Sponsored by</h3>
+            <div class="sponsor-brand">SmTv Urdu</div>
+            <p style="color:#cfd8df;text-align:center;margin:0 0 18px 0;font-size:14px;">Follow our sponsor to unlock this episode</p>
             
-            <a href="https://yourwebsite.com" 
-               target="_blank" 
-               class="sponsor-btn website" 
-               id="websiteBtn">
-              <i class="fas fa-globe"></i>
-              Visit Our Website
+            <div class="sponsor-buttons">
+              <a href="https://whatsapp.com/channel/0029Va9zAvvAYlUNRuzWqh0k" 
+                 target="_blank" 
+                 class="sponsor-btn whatsapp" 
+                 id="socialBtn">
+                <i class="fab fa-whatsapp"></i>
+                Join WhatsApp Channel
+              </a>
+              
+              <a href="https://yourwebsite.com" 
+                 target="_blank" 
+                 class="sponsor-btn website" 
+                 id="websiteBtn">
+                <i class="fas fa-globe"></i>
+                Visit Our Website
+              </a>
+            </div>
+          </div>
+          
+          <div class="contact-section">
+            <h3>💼 Become a Sponsor</h3>
+            <p>Want to advertise here? Reach thousands of daily viewers. Contact us to discuss partnership opportunities!</p>
+            <a href="mailto:contact@smtvurdu.com" class="contact-btn">
+              <i class="fas fa-envelope"></i>
+              Contact Us
             </a>
           </div>
         </div>
         
-        <!-- Sponsor Section 2: Contact/Advertise -->
-        <div class="contact-section">
-          <h3>💼 Become a Sponsor</h3>
-          <p>Want to advertise here? Reach thousands of daily viewers. Contact us to discuss partnership opportunities!</p>
-          <a href="mailto:contact@smtvurdu.com" class="contact-btn">
-            <i class="fas fa-envelope"></i>
-            Contact Us
-          </a>
+        <!-- Timer Countdown (Hidden initially) -->
+        <div id="timerSection" class="timer-section">
+          <div class="timer-message">⏳ Unlocking Episode...</div>
+          <div class="timer-display" id="timerDisplay">5</div>
         </div>
+        
       </div>
     </div>
   </div>
 
   <script>
-  // Wait for episode.js to load the episode first
-  window.addEventListener('load', function() {
-    setTimeout(function() {
-      const popup = document.getElementById('unlockPopup');
-      const episodeView = document.getElementById('episode-view');
-      
-      // Get episode info
-      const urlParams = new URLSearchParams(window.location.search);
-      const slug = urlParams.get('series');
-      const season = urlParams.get('season');
-      const ep = urlParams.get('ep');
-      
-      // Create unique unlock key
-      const unlockKey = 'unlocked_' + slug + '_s' + season + '_e' + ep;
-      
-      // Check if already unlocked
-      const isUnlocked = localStorage.getItem(unlockKey) === 'true';
-      
-      // Show popup if not unlocked
-      if (!isUnlocked) {
+  // Unlock System with 5-second timer
+  (function() {
+    const popup = document.getElementById('unlockPopup');
+    const mainContent = document.getElementById('mainContent');
+    const timerSection = document.getElementById('timerSection');
+    const timerDisplay = document.getElementById('timerDisplay');
+    const socialBtn = document.getElementById('socialBtn');
+    const websiteBtn = document.getElementById('websiteBtn');
+    
+    // Get episode info
+    const urlParams = new URLSearchParams(window.location.search);
+    const slug = urlParams.get('series');
+    const season = urlParams.get('season');
+    const ep = urlParams.get('ep');
+    
+    if (!slug || !season || !ep) {
+      console.error('Missing episode parameters');
+      return;
+    }
+    
+    const unlockKey = 'unlocked_' + slug + '_s' + season + '_e' + ep;
+    const isUnlocked = localStorage.getItem(unlockKey) === 'true';
+    
+    // Show popup if not unlocked
+    if (!isUnlocked) {
+      // Wait for episode.js to load
+      setTimeout(function() {
         popup.style.display = 'block';
-        episodeView.style.filter = 'blur(8px)';
-        episodeView.style.pointerEvents = 'none';
+      }, 500);
+    }
+    
+    // Handle button clicks
+    function handleClick() {
+      localStorage.setItem(unlockKey + '_clicked', 'true');
+    }
+    
+    if (socialBtn) socialBtn.addEventListener('click', handleClick);
+    if (websiteBtn) websiteBtn.addEventListener('click', handleClick);
+    
+    // Check when user returns from link
+    window.addEventListener('focus', function() {
+      if (localStorage.getItem(unlockKey + '_clicked') === 'true') {
+        localStorage.removeItem(unlockKey + '_clicked');
+        startCountdown();
       }
+    });
+    
+    // Start 5-second countdown
+    function startCountdown() {
+      mainContent.style.display = 'none';
+      timerSection.style.display = 'block';
       
-      // Handle unlock
-      function unlockEpisode() {
-        localStorage.setItem(unlockKey, 'true');
-        popup.style.display = 'none';
-        episodeView.style.filter = 'none';
-        episodeView.style.pointerEvents = 'auto';
-      }
+      let timeLeft = 5;
+      timerDisplay.textContent = timeLeft;
       
-      // Track button clicks
-      const socialBtn = document.getElementById('socialBtn');
-      const websiteBtn = document.getElementById('websiteBtn');
-      
-      if (socialBtn) {
-        socialBtn.addEventListener('click', function() {
-          localStorage.setItem(unlockKey + '_clicked', 'true');
-        });
-      }
-      
-      if (websiteBtn) {
-        websiteBtn.addEventListener('click', function() {
-          localStorage.setItem(unlockKey + '_clicked', 'true');
-        });
-      }
-      
-      // Auto-unlock when user returns
-      window.addEventListener('focus', function() {
-        if (localStorage.getItem(unlockKey + '_clicked') === 'true') {
+      const countdown = setInterval(function() {
+        timeLeft--;
+        timerDisplay.textContent = timeLeft;
+        
+        if (timeLeft <= 0) {
+          clearInterval(countdown);
           unlockEpisode();
-          localStorage.removeItem(unlockKey + '_clicked');
         }
-      });
-      
-    }, 1000); // Wait 1 second for episode.js to load content
-  });
+      }, 1000);
+    }
+    
+    // Unlock and hide popup
+    function unlockEpisode() {
+      localStorage.setItem(unlockKey, 'true');
+      popup.style.display = 'none';
+    }
+  })();
   </script>
 </body>
 </html>
