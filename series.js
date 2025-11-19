@@ -225,7 +225,7 @@
             const thumb = escapeHtml(ep.thumb || 'default-thumb.jpg');
             const episodeUrl = `episode.html?series=${encodeURIComponent(slug)}&season=${encodeURIComponent(season)}&ep=${encodeURIComponent(ep.ep)}${lang?('&lang='+encodeURIComponent(lang)) : ''}`;
             return `
-              <a class="pro-episode-card-pro reveal-item" href="${episodeUrl}" ${extra} tabindex="-1" aria-label="${epTitle}">
+              <a class="pro-episode-card-pro reveal-item" href="${episodeUrl}" tabindex="-1" aria-label="${epTitle}">
                 <div class="pro-ep-thumb-wrap-pro">
                   <img class="pro-ep-thumb-pro" src="${thumb}" alt="${epTitle}">
                   <span class="pro-ep-num-pro">Ep ${epNum}</span>
