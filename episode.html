@@ -14,13 +14,23 @@
   <title>SM-TV – Streaming</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <!-- Your main site styles -->
   <link rel="stylesheet" href="style.css">
 
+  <!-- Popup styles -->
   <style>
-    body { margin: 0; padding: 0; overflow-x: hidden; }
+    body {
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
 
-    #episode-view { min-height: 100vh; }
+    /* Episode view - always visible */
+    #episode-view {
+      min-height: 100vh;
+    }
 
+    /* Ultra-light overlay so episodes are clearly visible */
     #unlockPopup {
       display: none;
       position: fixed;
@@ -29,9 +39,14 @@
       height: 100%;
       z-index: 99999;
       padding: 16px;
+
+      /* Very transparent black veil */
       background: rgba(0, 0, 0, 0.04);
+
+      /* Light blur for glassy feel */
       backdrop-filter: blur(4px) saturate(130%);
       -webkit-backdrop-filter: blur(4px) saturate(130%);
+
       overflow-y: auto;
     }
 
@@ -42,313 +57,537 @@
       justify-content: center;
     }
 
+    /* Glassmorphism card – lighter & more transparent */
     .popup-card {
-      max-width: 460px; width: 100%;
+      max-width: 460px;
+      width: 100%;
       border-radius: 24px;
       padding: 24px 20px 20px;
       position: relative;
       overflow: hidden;
-      background: linear-gradient(135deg,
+
+      /* Semi-transparent dark glass with a bit of gradient */
+      background:
+        linear-gradient(135deg,
           rgba(11, 18, 35, 0.82),
           rgba(11, 18, 35, 0.60));
+
       border: 1px solid rgba(255, 255, 255, 0.20);
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
+      box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.55);
+
       animation: popupIn 0.30s ease-out forwards;
     }
 
+    /* Soft neon edge highlight */
+    .popup-card::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 0% 0%,
+          rgba(0, 208, 240, 0.7),
+          transparent 55%),
+        radial-gradient(circle at 100% 100%,
+          rgba(255, 212, 0, 0.7),
+          transparent 55%);
+      opacity: 0.18;
+      mix-blend-mode: screen;
+    }
+
     @keyframes popupIn {
-      from { opacity: 0; transform: translateY(14px) scale(0.97);}
-      to { opacity: 1; transform: translateY(0) scale(1);}
+      from {
+        opacity: 0;
+        transform: translateY(14px) scale(0.97);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
     }
 
-    .popup-header { text-align: center; margin-bottom: 20px; }
+    .popup-header {
+      text-align: center;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
     .popup-lock-icon {
-      font-size: 32px; margin-bottom: 10px;
-      width: 52px; height: 52px; border-radius: 999px;
+      font-size: 32px;
+      margin-bottom: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 52px;
+      height: 52px;
+      border-radius: 999px;
       background: radial-gradient(circle at 30% 0%,
-          rgba(0, 208, 240, 0.95),
-          rgba(18, 27, 56, 0.6));
-      display: inline-flex; align-items: center; justify-content: center;
-      box-shadow: 0 0 20px rgba(0, 208, 240, 0.9);
+                  rgba(0, 208, 240, 0.95),
+                  rgba(18, 27, 56, 0.6));
+      box-shadow:
+        0 0 20px rgba(0, 208, 240, 0.9),
+        0 10px 24px rgba(0, 0, 0, 0.8);
     }
 
-    .popup-header h2 { color: #fff; font-size: 23px; margin: 6px 0; }
-    .popup-header p { color: rgba(225,225,255,0.85); font-size:14px; }
+    .popup-header h2 {
+      color: #f4f7ff;
+      font-size: 23px;
+      margin: 6px 0 4px;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+    }
 
+    .popup-header p {
+      color: rgba(225, 235, 255, 0.86);
+      font-size: 14px;
+      margin: 0;
+      font-weight: 500;
+    }
+
+    /* ❗ New: Fail message (small, non-intrusive) */
     .fail-message {
-      display:none;
-      background: rgba(255,50,50,0.25);
-      border: 1px solid rgba(255,80,80,0.6);
-      padding: 10px;
+      display: none;
       margin-bottom: 12px;
+      padding: 10px 12px;
       border-radius: 10px;
-      text-align:center;
-      color:#ff9b9b;
-      font-weight:600;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      background: rgba(255, 71, 87, 0.16);
+      border: 1px solid rgba(255, 71, 87, 0.6);
+      color: #ff9fa8;
     }
 
+    /* Sponsor block – cleaner & more glassy */
     .sponsor-section {
+      position: relative;
+      z-index: 1;
       border-radius: 18px;
-      padding: 16px;
-      background: linear-gradient(145deg,
-          rgba(255,255,255,0.03),
-          rgba(0,0,0,0.25));
-      border: 1px solid rgba(139,233,255,0.55);
-      margin-bottom:16px;
+      padding: 16px 15px 16px;
+      margin-bottom: 16px;
+
+      background:
+        linear-gradient(145deg,
+          rgba(255, 255, 255, 0.03),
+          rgba(0, 0, 0, 0.25));
+      border: 1px solid rgba(139, 233, 255, 0.55);
     }
 
+    .sponsor-section h3 {
+      color: #8be9ff;
+      font-size: 14px;
+      margin: 0 0 10px;
+      text-align: center;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.10em;
+    }
+
+    .sponsor-brand-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .sponsor-logo {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      object-fit: cover;
+      border: 2px solid rgba(255, 212, 0, 0.6);
+      box-shadow:
+        0 6px 16px rgba(255, 212, 0, 0.7);
+    }
+
+    .sponsor-brand {
+      color: #ffd962;
+      font-size: 21px;
+      font-weight: 900;
+      text-shadow:
+        0 0 16px rgba(255, 212, 0, 0.85),
+        0 0 32px rgba(255, 180, 0, 0.7);
+    }
+
+    .unlock-message {
+      color: rgba(235, 244, 255, 0.90);
+      text-align: center;
+      margin: 0 4px 14px;
+      font-size: 13px;
+      line-height: 1.6;
+      font-weight: 500;
+    }
+
+    /* Main unlock button */
     .unlock-btn {
-      width:100%;
-      padding:14px 22px;
-      border-radius:999px;
-      background:linear-gradient(135deg,#667eea,#764ba2,#f093fb);
-      border:none;
-      color:#fff; text-align:center;
-      font-weight:800;
-      font-size:14px;
-      cursor:pointer;
-      text-decoration:none;
-      display:flex;
-      justify-content:center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 14px 22px;
+      width: 100%;
+      border-radius: 999px;
+      border: none;
+      text-decoration: none;
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 14px;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+
+      background: linear-gradient(135deg,
+            #667eea 0%,
+            #764ba2 45%,
+            #f093fb 100%);
+      color: #fff;
+
+      box-shadow:
+        0 12px 28px rgba(118, 75, 162, 0.7),
+        0 0 26px rgba(240, 147, 251, 0.8);
+      text-shadow: 0 2px 7px rgba(0, 0, 0, 0.45);
+      transition: transform 0.18s ease,
+                  box-shadow 0.18s ease,
+                  filter 0.12s ease;
     }
 
-    .timer-section { display:none; text-align:center; padding:25px 0; }
+    .unlock-btn:hover {
+      transform: translateY(-1.5px);
+      filter: brightness(1.06);
+      box-shadow:
+        0 16px 36px rgba(118, 75, 162, 0.9),
+        0 0 32px rgba(240, 147, 251, 1);
+    }
+
+    .unlock-btn:active {
+      transform: translateY(0);
+      box-shadow:
+        0 9px 22px rgba(118, 75, 162, 0.6),
+        0 0 20px rgba(240, 147, 251, 0.75);
+    }
+
+    /* Sponsor CTA block */
+    .contact-section {
+      position: relative;
+      z-index: 1;
+      margin-top: 14px;
+      border-radius: 18px;
+      padding: 14px 13px 14px;
+
+      background:
+        linear-gradient(145deg,
+          rgba(255, 255, 255, 0.02),
+          rgba(0, 0, 0, 0.28));
+      border: 1px solid rgba(255, 212, 0, 0.55);
+
+      text-align: center;
+    }
+
+    .contact-section h3 {
+      color: #ffd962;
+      font-size: 16px;
+      margin: 0 0 4px;
+      font-weight: 800;
+    }
+
+    .contact-section p {
+      color: rgba(240, 244, 255, 0.90);
+      font-size: 13px;
+      line-height: 1.55;
+      margin: 0 4px 10px;
+    }
+
+    .contact-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 19px;
+
+      background: linear-gradient(90deg,
+                  rgba(255, 212, 0, 0.96),
+                  rgba(255, 179, 87, 0.98));
+      color: #151515;
+      font-weight: 800;
+      font-size: 13px;
+      border-radius: 999px;
+      text-decoration: none;
+      box-shadow:
+        0 10px 24px rgba(255, 212, 0, 0.7),
+        0 0 20px rgba(255, 212, 0, 1);
+      transition: transform 0.16s ease,
+                  box-shadow 0.16s ease;
+    }
+
+    .contact-btn:hover {
+      transform: translateY(-1px);
+      box-shadow:
+        0 14px 30px rgba(255, 212, 0, 0.9),
+        0 0 26px rgba(255, 212, 0, 1);
+    }
+
+    /* Timer Section */
+    .timer-section {
+      display: none;
+      text-align: center;
+      padding: 32px 12px 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .timer-message {
+      color: #00e0ff;
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      text-shadow: 0 3px 15px rgba(0, 208, 240, 0.6);
+    }
+
     .timer-display {
-      font-size:50px; font-weight:900; color:#ff4a4a;
+      font-size: 56px;
+      font-weight: 900;
+      color: #ff4a4a;
+      text-shadow:
+        0 0 22px rgba(255, 74, 74, 0.95),
+        0 0 46px rgba(255, 74, 74, 0.8);
+      animation: glow 1s ease-in-out infinite alternate;
+      line-height: 1;
+    }
+
+    @keyframes glow {
+      from {
+        text-shadow:
+          0 0 18px rgba(255, 74, 74, 0.9),
+          0 0 34px rgba(255, 74, 74, 0.7);
+      }
+      to {
+        text-shadow:
+          0 0 32px rgba(255, 74, 74, 1),
+          0 0 70px rgba(255, 74, 74, 0.9);
+      }
+    }
+
+    @media (max-width: 520px) {
+      #unlockPopup {
+        padding: 10px;
+      }
+      .popup-card {
+        padding: 22px 16px 18px;
+        border-radius: 20px;
+      }
+      .popup-header h2 {
+        font-size: 20px;
+      }
+      .sponsor-brand {
+        font-size: 18px;
+      }
+      .timer-display {
+        font-size: 48px;
+      }
     }
   </style>
 
-  <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />  
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <!-- Episode logic -->
+  <script defer src="episode.js"></script>
 </head>
-
 <body>
-
+  <!-- Episode Player (Always visible in background) -->
   <div id="episode-view"></div>
 
+  <!-- Unlock Popup -->
   <div id="unlockPopup">
     <div class="popup-container">
       <div class="popup-card">
 
+        <!-- Main Popup Content -->
         <div id="mainContent">
-
           <div class="popup-header">
             <div class="popup-lock-icon">🔒</div>
             <h2>Unlock Episode</h2>
             <p>Join our sponsor channel to watch this episode</p>
           </div>
 
-          <!-- FAIL MESSAGE -->
+          <!-- New fail message -->
           <div id="failMessage" class="fail-message">
             You returned too fast or you returned without joining.
           </div>
 
           <div class="sponsor-section">
-            <div class="sponsor-brand">SMTV Urdu</div>
+            <h3>Episode Sponsored By</h3>
+
+            <div class="sponsor-brand-container">
+              <img src="favicon.png" alt="Sponsor Logo" class="sponsor-logo">
+              <div class="sponsor-brand">SmTv Urdu</div>
+            </div>
 
             <p class="unlock-message">
-              Tap the button below, join our sponsor channel, then come back here.
+              Tap the button below, join our sponsor channel, then come back here to unlock this episode.
             </p>
 
-            <a id="unlockBtn"
+            <a href="https://whatsapp.com/channel/0029Va9zAvvAYlUNRuzWqh0k"
                target="_blank"
-               href="https://whatsapp.com/channel/0029Va9zAvvAYlUNRuzWqh0k"
-               class="unlock-btn">Unlock Episode</a>
+               class="unlock-btn"
+               id="unlockBtn">
+              Unlock Episode
+            </a>
           </div>
 
-          <p style="text-align:center;color:#ddd;font-size:13px;">
-            Advertise your brand here. Contact us.
-          </p>
-
+          <div class="contact-section">
+            <h3>Become a Sponsor</h3>
+            <p>Advertise your brand here and reach thousands of active viewers every day.</p>
+            <a href="mailto:contact@smtvurdu.com" class="contact-btn">
+              <i class="fas fa-envelope"></i>
+              Contact Us
+            </a>
+          </div>
         </div>
 
+        <!-- Timer Countdown -->
         <div id="timerSection" class="timer-section">
-          <p style="color:#00e0ff;font-weight:700;">
-            Unlocking Episode...
-          </p>
-          <div id="timerDisplay" class="timer-display">5</div>
+          <div class="timer-message">⏳ Unlocking Episode...</div>
+          <div class="timer-display" id="timerDisplay">5</div>
         </div>
 
       </div>
     </div>
   </div>
+
+  <!-- Unlock System with 24-hour expiry + 5–7s away time -->
   <script>
-(function () {
+  (function() {
+    const popup = document.getElementById('unlockPopup');
+    const mainContent = document.getElementById('mainContent');
+    const timerSection = document.getElementById('timerSection');
+    const timerDisplay = document.getElementById('timerDisplay');
+    const unlockBtn = document.getElementById('unlockBtn');
+    const failMessage = document.getElementById('failMessage');
 
-  const popup = document.getElementById('unlockPopup');
-  const mainContent = document.getElementById('mainContent');
-  const timerSection = document.getElementById('timerSection');
-  const timerDisplay = document.getElementById('timerDisplay');
-  const unlockBtn = document.getElementById('unlockBtn');
-  const failMessage = document.getElementById('failMessage');
+    // Get episode info
+    const urlParams = new URLSearchParams(window.location.search);
+    const slug = urlParams.get('series');
+    const season = urlParams.get('season');
+    const ep = urlParams.get('ep');
 
-  // Episode info
-  const urlParams = new URLSearchParams(window.location.search);
-  const slug = urlParams.get('series');
-  const season = urlParams.get('season');
-  const ep = parseInt(urlParams.get('ep')); // number
-
-  if (!slug || !season || !ep) {
-    console.error("Missing episode parameters");
-    return;
-  }
-
-  // =============================
-  // SMART UNLOCK SYSTEM (1 lock → next 2 free)
-  // =============================
-
-  const seriesUnlockKey = `series_unlock_count_${slug}`;
-  let seriesUnlockCount = parseInt(localStorage.getItem(seriesUnlockKey) || "0");
-
-  function autoUnlockedBySeriesRule() {
-    // If last unlock gave 2 auto-free episodes
-    return seriesUnlockCount > 0;
-  }
-
-  function reduceSeriesUnlockCount() {
-    if (seriesUnlockCount > 0) {
-      seriesUnlockCount--;
-      localStorage.setItem(seriesUnlockKey, seriesUnlockCount.toString());
-    }
-  }
-
-  function addSeriesUnlockBonus() {
-    // After unlocking 1 episode → give 2 free plays
-    seriesUnlockCount = 2;
-    localStorage.setItem(seriesUnlockKey, seriesUnlockCount.toString());
-  }
-
-  // =============================
-  // NORMAL EPISODE UNLOCK KEYS
-  // =============================
-
-  const epKey = `unlock_${slug}_s${season}_e${ep}`;
-  const epTimeKey = epKey + "_time";
-  const clickFlagKey = epKey + "_clicked";
-
-  let blurTime = null;
-
-  // =============================
-  // CHECK IF EPISODE IS UNLOCKED
-  // =============================
-
-  function isUnlocked() {
-    if (autoUnlockedBySeriesRule()) return true;
-
-    const timestamp = localStorage.getItem(epTimeKey);
-    if (!timestamp) return false;
-
-    const hours = (Date.now() - parseInt(timestamp)) / (1000 * 60 * 60);
-    if (hours >= 24) {
-      localStorage.removeItem(epKey);
-      localStorage.removeItem(epTimeKey);
-      return false;
-    }
-    return localStorage.getItem(epKey) === "true";
-  }
-
-  // =============================
-  // SHOW POPUP IF NOT UNLOCKED
-  // =============================
-
-  if (!isUnlocked()) {
-    setTimeout(() => popup.style.display = "block", 400);
-  }
-
-  // =============================
-  // BUTTON CLICK
-  // =============================
-
-  if (unlockBtn) {
-    unlockBtn.addEventListener('click', () => {
-      localStorage.setItem(clickFlagKey, "true");
-      failMessage.style.display = "none";
-    });
-  }
-
-  // =============================
-  // DETECT AWAY TIME (blur)
-  // =============================
-
-  window.addEventListener("blur", () => {
-    if (localStorage.getItem(clickFlagKey) === "true") {
-      blurTime = Date.now();
-    }
-  });
-
-  // =============================
-  // WHEN USER RETURNS (focus)
-  // =============================
-
-  window.addEventListener("focus", () => {
-
-    if (localStorage.getItem(clickFlagKey) !== "true") return;
-
-    const now = Date.now();
-    const away = blurTime ? (now - blurTime) / 1000 : 0;
-
-    // Must be away for at least 12 seconds
-    if (away < 12) {
-      failMessage.style.display = "block";
-      localStorage.removeItem(clickFlagKey);
-      blurTime = null;
+    if (!slug || !season || !ep) {
+      console.error('Missing episode parameters');
       return;
     }
 
-    // Passed away-time → Start countdown
-    localStorage.removeItem(clickFlagKey);
-    blurTime = null;
-    startCountdown();
-  });
+    const unlockKey = 'unlocked_' + slug + '_s' + season + '_e' + ep;
+    const unlockTimeKey = unlockKey + '_time';
+    const clickedFlagKey = unlockKey + '_clicked';
 
-  // =============================
-  // COUNTDOWN LOGIC
-  // =============================
+    let hasBlurredSinceClick = false;
+    let blurTime = null;
+    let minAwaySeconds = null; // will be 5, 6, or 7
 
-  function startCountdown() {
-    mainContent.style.display = "none";
-    timerSection.style.display = "block";
+    // Check if unlocked and not expired (24 hours)
+    function isUnlocked() {
+      const unlockTime = localStorage.getItem(unlockTimeKey);
+      if (!unlockTime) return false;
 
-    let timeLeft = 5;
-    timerDisplay.textContent = timeLeft;
+      const now = new Date().getTime();
+      const unlockTimestamp = parseInt(unlockTime, 10);
+      const hoursPassed = (now - unlockTimestamp) / (1000 * 60 * 60);
 
-    const timer = setInterval(() => {
-      timeLeft--;
+      // If more than 24 hours, remove unlock
+      if (hoursPassed >= 24) {
+        localStorage.removeItem(unlockKey);
+        localStorage.removeItem(unlockTimeKey);
+        return false;
+      }
+
+      return localStorage.getItem(unlockKey) === 'true';
+    }
+
+    // Start 5-second countdown
+    function startCountdown() {
+      mainContent.style.display = 'none';
+      timerSection.style.display = 'block';
+
+      let timeLeft = 5;
       timerDisplay.textContent = timeLeft;
 
-      if (timeLeft <= 0) {
-        clearInterval(timer);
-        unlockEpisode();
+      const countdown = setInterval(function() {
+        timeLeft--;
+        timerDisplay.textContent = timeLeft;
+
+        if (timeLeft <= 0) {
+          clearInterval(countdown);
+          unlockEpisode();
+        }
+      }, 1000);
+    }
+
+    // Unlock and hide popup with 24-hour timestamp
+    function unlockEpisode() {
+      const now = new Date().getTime();
+      localStorage.setItem(unlockKey, 'true');
+      localStorage.setItem(unlockTimeKey, now.toString());
+      popup.style.display = 'none';
+    }
+
+    // If already unlocked, don't show popup
+    if (!isUnlocked()) {
+      setTimeout(function() {
+        popup.style.display = 'block';
+      }, 500);
+    }
+
+    // Handle unlock button click
+    if (unlockBtn) {
+      unlockBtn.addEventListener('click', function() {
+        // Mark that user clicked the link
+        localStorage.setItem(clickedFlagKey, 'true');
+        hasBlurredSinceClick = false;
+        blurTime = null;
+        failMessage.style.display = 'none';
+        // random away time: 5, 6, or 7 seconds
+        minAwaySeconds = 5 + Math.floor(Math.random() * 3);
+      });
+    }
+
+    // Track that user actually left the page after clicking
+    window.addEventListener('blur', function() {
+      if (localStorage.getItem(clickedFlagKey) === 'true') {
+        hasBlurredSinceClick = true;
+        blurTime = Date.now();
       }
-    }, 1000);
-  }
+    });
 
-  // =============================
-  // UNLOCK EPISODE
-  // =============================
+    // When user comes back to the page, start countdown ONLY if they stayed away enough
+    window.addEventListener('focus', function() {
+      if (
+        !isUnlocked() &&
+        localStorage.getItem(clickedFlagKey) === 'true' &&
+        hasBlurredSinceClick
+      ) {
+        const now = Date.now();
+        const awaySeconds = blurTime ? (now - blurTime) / 1000 : 0;
+        const required = minAwaySeconds || 5;
 
-  function unlockEpisode() {
-    const now = Date.now();
+        if (awaySeconds < required) {
+          // returned too fast
+          failMessage.style.display = 'block';
+          // reset flags, but keep popup and button
+          hasBlurredSinceClick = false;
+          blurTime = null;
+          localStorage.removeItem(clickedFlagKey);
+          return;
+        }
 
-    localStorage.setItem(epKey, "true");
-    localStorage.setItem(epTimeKey, now.toString());
-
-    // Add bonus — next 2 episodes of same series free
-    addSeriesUnlockBonus();
-
-    popup.style.display = "none";
-  }
-
-  // =============================
-  // AUTO-UNLOCK ON PAGE LOAD (series rule)
-  // =============================
-  if (autoUnlockedBySeriesRule()) {
-    reduceSeriesUnlockCount();
-    popup.style.display = "none";
-  }
-
-})();
-</script>
-
+        // stayed away long enough → start countdown
+        hasBlurredSinceClick = false;
+        blurTime = null;
+        localStorage.removeItem(clickedFlagKey);
+        startCountdown();
+      }
+    });
+  })();
+  </script>
 </body>
 </html>
