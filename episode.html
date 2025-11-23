@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-WM3KEDD127"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -8,382 +9,470 @@
     gtag('js', new Date());
     gtag('config', 'G-WM3KEDD127');
   </script>
-  
+
   <meta charset="UTF-8">
   <title>SM-TV – Streaming</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Your main site styles -->
   <link rel="stylesheet" href="style.css">
-  
+
+  <!-- Popup styles -->
   <style>
     body {
       margin: 0;
       padding: 0;
       overflow-x: hidden;
     }
-    
+
     /* Episode view - always visible */
     #episode-view {
       min-height: 100vh;
     }
-    
-    /* Ultra Transparent Popup Overlay */
+
+    /* Full-screen transparent overlay */
     #unlockPopup {
       display: none;
       position: fixed;
-      top: 0;
-      left: 0;
+      inset: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.25);
-      backdrop-filter: blur(25px);
-      -webkit-backdrop-filter: blur(25px);
       z-index: 99999;
+      padding: 16px;
+      /* ultra transparent so background is clearly visible */
+      background:
+        radial-gradient(circle at 0% 0%, rgba(0, 208, 240, 0.18), transparent 60%),
+        radial-gradient(circle at 100% 100%, rgba(255, 212, 0, 0.16), transparent 55%),
+        rgba(0, 0, 0, 0.15);
+      backdrop-filter: blur(22px) saturate(150%);
+      -webkit-backdrop-filter: blur(22px) saturate(150%);
       overflow-y: auto;
-      padding: 20px;
     }
-    
+
     .popup-container {
       min-height: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
     }
-    
-    /* Super Transparent Blur Card */
+
+    /* Glassmorphism card */
     .popup-card {
-      max-width: 450px;
+      max-width: 460px;
       width: 100%;
-      background: rgba(20, 25, 35, 0.55);
-      backdrop-filter: blur(30px);
-      -webkit-backdrop-filter: blur(30px);
-      border-radius: 20px;
-      padding: 35px;
-      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.3);
-      border: 2px solid rgba(0, 208, 240, 0.25);
+      border-radius: 24px;
+      padding: 26px 22px 24px;
       position: relative;
+      overflow: hidden;
+      background: radial-gradient(circle at top left,
+                  rgba(102, 126, 234, 0.16),
+                  rgba(10, 15, 30, 0.90));
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow:
+        0 22px 60px rgba(0, 0, 0, 0.45),
+        0 0 0 1px rgba(0, 0, 0, 0.4);
+      animation: popupIn 0.35s ease-out forwards;
     }
-    
+
+    .popup-card::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      pointer-events: none;
+      background:
+        linear-gradient(135deg,
+          rgba(0, 208, 240, 0.85),
+          rgba(120, 94, 255, 0.75),
+          rgba(255, 212, 0, 0.85));
+      opacity: 0.12;
+      mix-blend-mode: screen;
+    }
+
+    @keyframes popupIn {
+      from {
+        opacity: 0;
+        transform: translateY(18px) scale(0.96);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
     .popup-header {
       text-align: center;
-      margin-bottom: 30px;
+      margin-bottom: 22px;
+      position: relative;
+      z-index: 1;
     }
-    
+
+    .popup-lock-icon {
+      font-size: 34px;
+      margin-bottom: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 54px;
+      height: 54px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 0%,
+                  rgba(0, 208, 240, 0.9),
+                  rgba(18, 27, 56, 0.4));
+      box-shadow:
+        0 0 18px rgba(0, 208, 240, 0.75),
+        0 10px 28px rgba(0, 0, 0, 0.8);
+    }
+
     .popup-header h2 {
-      color: #00d0f0;
-      font-size: 28px;
-      margin: 0 0 10px 0;
-      font-weight: 900;
-      text-shadow: 0 3px 15px rgba(0, 208, 240, 0.6);
+      color: #e9f4ff;
+      font-size: 24px;
+      margin: 8px 0 4px;
+      font-weight: 800;
+      letter-spacing: 0.03em;
     }
-    
+
     .popup-header p {
-      color: #ffffff;
-      font-size: 15px;
+      color: rgba(230, 240, 255, 0.8);
+      font-size: 14px;
       margin: 0;
       font-weight: 500;
     }
-    
-    /* Transparent Sponsor Section */
+
+    /* Sponsor block */
     .sponsor-section {
-      background: rgba(0, 208, 240, 0.06);
-      backdrop-filter: blur(15px);
-      -webkit-backdrop-filter: blur(15px);
-      border-radius: 15px;
-      padding: 25px;
-      margin-bottom: 20px;
-      border: 1px solid rgba(0, 208, 240, 0.2);
+      position: relative;
+      z-index: 1;
+      background: radial-gradient(circle at 0 0,
+                    rgba(0, 208, 240, 0.16),
+                    transparent 60%);
+      border-radius: 18px;
+      padding: 18px 16px 16px;
+      margin-bottom: 18px;
+      border: 1px solid rgba(0, 208, 240, 0.35);
     }
-    
+
     .sponsor-section h3 {
-      color: #00d0f0;
-      font-size: 18px;
-      margin: 0 0 15px 0;
+      color: #8be9ff;
+      font-size: 15px;
+      margin: 0 0 10px;
       text-align: center;
       font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
     }
-    
-    /* Sponsor Brand with Logo */
+
     .sponsor-brand-container {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 15px;
-      margin-bottom: 15px;
+      gap: 14px;
+      margin-bottom: 10px;
     }
-    
+
     .sponsor-logo {
-      width: 50px;
-      height: 50px;
-      border-radius: 10px;
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
       object-fit: cover;
-      border: 2px solid rgba(255, 212, 0, 0.3);
-      box-shadow: 0 4px 15px rgba(255, 212, 0, 0.3);
+      border: 2px solid rgba(255, 212, 0, 0.4);
+      box-shadow: 0 6px 18px rgba(255, 212, 0, 0.5);
     }
-    
+
     .sponsor-brand {
-      color: #ffd400;
-      font-size: 24px;
+      color: #ffd962;
+      font-size: 22px;
       font-weight: 900;
-      text-shadow: 0 3px 18px rgba(255, 212, 0, 0.7);
+      text-shadow:
+        0 0 16px rgba(255, 212, 0, 0.85),
+        0 0 32px rgba(255, 180, 0, 0.7);
     }
-    
+
     .unlock-message {
-      color: #ffffff;
+      color: rgba(235, 244, 255, 0.86);
       text-align: center;
-      margin: 0 0 20px 0;
-      font-size: 15px;
+      margin: 0 4px 16px;
+      font-size: 14px;
       line-height: 1.6;
       font-weight: 500;
     }
-    
-    /* Beautiful Gradient Unlock Button */
+
     .unlock-btn {
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 10px;
-      padding: 18px 30px;
-      border-radius: 12px;
-      text-decoration: none;
-      font-weight: 800;
-      font-size: 18px;
-      transition: all 0.3s ease;
-      cursor: pointer;
-      border: none;
+      padding: 15px 24px;
       width: 100%;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      border-radius: 999px;
+      border: none;
+      text-decoration: none;
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 15px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      background: linear-gradient(135deg,
+            #667eea 0%,
+            #764ba2 45%,
+            #f093fb 100%);
       color: #fff;
-      box-shadow: 0 10px 35px rgba(102, 126, 234, 0.5);
-      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      box-shadow:
+        0 14px 32px rgba(118, 75, 162, 0.65),
+        0 0 26px rgba(240, 147, 251, 0.75);
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.38);
+      transition: transform 0.2s ease, box-shadow 0.2s ease,
+                  filter 0.15s ease;
     }
-    
+
     .unlock-btn:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 15px 50px rgba(102, 126, 234, 0.7);
+      transform: translateY(-2px);
+      filter: brightness(1.05);
+      box-shadow:
+        0 18px 40px rgba(118, 75, 162, 0.9),
+        0 0 34px rgba(240, 147, 251, 0.95);
     }
-    
-    /* Transparent Contact Section */
+
+    .unlock-btn:active {
+      transform: translateY(0);
+      box-shadow:
+        0 10px 24px rgba(118, 75, 162, 0.6),
+        0 0 22px rgba(240, 147, 251, 0.75);
+    }
+
+    /* Sponsor CTA */
     .contact-section {
-      background: rgba(255, 212, 0, 0.06);
-      backdrop-filter: blur(15px);
-      -webkit-backdrop-filter: blur(15px);
-      border-radius: 15px;
-      padding: 25px;
-      border: 1px solid rgba(255, 212, 0, 0.2);
+      position: relative;
+      z-index: 1;
+      margin-top: 16px;
+      background: radial-gradient(circle at 100% 0,
+                    rgba(255, 212, 0, 0.18),
+                    transparent 60%);
+      border-radius: 16px;
+      padding: 16px 14px 14px;
+      border: 1px solid rgba(255, 212, 0, 0.35);
       text-align: center;
     }
-    
+
     .contact-section h3 {
-      color: #ffd400;
-      font-size: 20px;
-      margin: 0 0 12px 0;
+      color: #ffd962;
+      font-size: 16px;
+      margin: 0 0 6px;
       font-weight: 800;
-      text-shadow: 0 3px 18px rgba(255, 212, 0, 0.6);
     }
-    
+
     .contact-section p {
-      color: #ffffff;
-      font-size: 14px;
-      line-height: 1.6;
-      margin: 0 0 18px 0;
-      font-weight: 500;
+      color: rgba(240, 244, 255, 0.88);
+      font-size: 13px;
+      line-height: 1.55;
+      margin: 0 4px 12px;
     }
-    
+
     .contact-btn {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      padding: 13px 26px;
-      background: linear-gradient(90deg, rgba(255, 212, 0, 0.95) 0%, rgba(255, 179, 87, 0.95) 100%);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      color: #111;
+      gap: 6px;
+      padding: 10px 20px;
+      background: linear-gradient(90deg,
+                  rgba(255, 212, 0, 0.96),
+                  rgba(255, 179, 87, 0.98));
+      color: #151515;
       font-weight: 800;
+      font-size: 13px;
       border-radius: 999px;
       text-decoration: none;
-      transition: all 0.3s ease;
-      box-shadow: 0 8px 25px rgba(255, 212, 0, 0.4);
+      box-shadow:
+        0 10px 24px rgba(255, 212, 0, 0.65),
+        0 0 20px rgba(255, 212, 0, 0.9);
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
     }
-    
+
     .contact-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 40px rgba(255, 212, 0, 0.6);
+      transform: translateY(-1px);
+      box-shadow:
+        0 14px 32px rgba(255, 212, 0, 0.8),
+        0 0 26px rgba(255, 212, 0, 1);
     }
-    
+
     /* Timer Section */
     .timer-section {
       display: none;
       text-align: center;
-      padding: 40px 20px;
+      padding: 42px 12px 26px;
+      position: relative;
+      z-index: 1;
     }
-    
+
     .timer-message {
-      color: #00d0f0;
-      font-size: 20px;
+      color: #00e0ff;
+      font-size: 18px;
       font-weight: 700;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       text-shadow: 0 3px 15px rgba(0, 208, 240, 0.6);
     }
-    
+
     .timer-display {
-      font-size: 80px;
+      font-size: 64px;
       font-weight: 900;
-      color: #ff3333;
-      text-shadow: 0 0 30px rgba(255, 51, 51, 0.9),
-                   0 0 60px rgba(255, 51, 51, 0.7),
-                   0 0 90px rgba(255, 51, 51, 0.5);
+      color: #ff4a4a;
+      text-shadow:
+        0 0 24px rgba(255, 74, 74, 0.9),
+        0 0 52px rgba(255, 74, 74, 0.75);
       animation: glow 1s ease-in-out infinite alternate;
       line-height: 1;
     }
-    
+
     @keyframes glow {
       from {
-        text-shadow: 0 0 20px rgba(255, 51, 51, 0.9),
-                     0 0 40px rgba(255, 51, 51, 0.7),
-                     0 0 60px rgba(255, 51, 51, 0.5);
+        text-shadow:
+          0 0 18px rgba(255, 74, 74, 0.9),
+          0 0 34px rgba(255, 74, 74, 0.7);
       }
       to {
-        text-shadow: 0 0 40px rgba(255, 51, 51, 1),
-                     0 0 80px rgba(255, 51, 51, 0.9),
-                     0 0 120px rgba(255, 51, 51, 0.7);
+        text-shadow:
+          0 0 32px rgba(255, 74, 74, 1),
+          0 0 70px rgba(255, 74, 74, 0.9);
       }
     }
-    
-    @media (max-width: 500px) {
+
+    @media (max-width: 520px) {
+      #unlockPopup {
+        padding: 12px;
+      }
       .popup-card {
-        padding: 25px;
+        padding: 22px 18px 20px;
+        border-radius: 22px;
       }
       .popup-header h2 {
-        font-size: 24px;
-      }
-      .sponsor-brand {
         font-size: 20px;
       }
-      .sponsor-logo {
-        width: 40px;
-        height: 40px;
+      .sponsor-brand {
+        font-size: 18px;
       }
       .timer-display {
-        font-size: 60px;
+        font-size: 52px;
       }
     }
   </style>
-  
+
+  <!-- Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <!-- Episode logic -->
   <script defer src="episode.js"></script>
 </head>
 <body>
   <!-- Episode Player (Always visible in background) -->
   <div id="episode-view"></div>
 
-  <!-- Unlock Popup (Ultra Transparent Blur Overlay) -->
+  <!-- Unlock Popup -->
   <div id="unlockPopup">
     <div class="popup-container">
       <div class="popup-card">
-        
+
         <!-- Main Popup Content -->
         <div id="mainContent">
           <div class="popup-header">
-            <h2>🔓 Unlock Episode</h2>
-            <p>To unlock this episode, join our sponsor channel</p>
+            <div class="popup-lock-icon">🔒</div>
+            <h2>Unlock Episode</h2>
+            <p>Join our sponsor channel to watch this episode</p>
           </div>
-          
+
           <div class="sponsor-section">
-            <h3>Episode Sponsored by</h3>
-            
-            <!-- Sponsor Brand with Logo -->
+            <h3>Episode Sponsored By</h3>
+
             <div class="sponsor-brand-container">
               <img src="favicon.png" alt="Sponsor Logo" class="sponsor-logo">
               <div class="sponsor-brand">SmTv Urdu</div>
             </div>
-            
-            <p class="unlock-message">You must join our sponsor channel to unlock this episode</p>
-            
-            <!-- Beautiful Unlock Button (No Icon) -->
-            <a href="https://whatsapp.com/channel/0029Va9zAvvAYlUNRuzWqh0k" 
-               target="_blank" 
-               class="unlock-btn" 
+
+            <p class="unlock-message">
+              Tap the button below, join our sponsor channel, then come back here to unlock this episode.
+            </p>
+
+            <a href="https://whatsapp.com/channel/0029Va9zAvvAYlUNRuzWqh0k"
+               target="_blank"
+               class="unlock-btn"
                id="unlockBtn">
               Unlock Episode
             </a>
           </div>
-          
+
           <div class="contact-section">
-            <h3>💼 Become a Sponsor</h3>
-            <p>Want to advertise here? Reach thousands of daily viewers. Contact us to discuss partnership opportunities!</p>
+            <h3>Become a Sponsor</h3>
+            <p>Advertise your brand here and reach thousands of active Urdu series viewers every day.</p>
             <a href="mailto:contact@smtvurdu.com" class="contact-btn">
               <i class="fas fa-envelope"></i>
               Contact Us
             </a>
           </div>
         </div>
-        
-        <!-- Timer Countdown (Hidden initially) -->
+
+        <!-- Timer Countdown -->
         <div id="timerSection" class="timer-section">
           <div class="timer-message">⏳ Unlocking Episode...</div>
           <div class="timer-display" id="timerDisplay">5</div>
         </div>
-        
+
       </div>
     </div>
   </div>
 
+  <!-- Unlock System with 24-hour expiry -->
   <script>
-  // Unlock System with 24-hour expiry
   (function() {
     const popup = document.getElementById('unlockPopup');
     const mainContent = document.getElementById('mainContent');
     const timerSection = document.getElementById('timerSection');
     const timerDisplay = document.getElementById('timerDisplay');
     const unlockBtn = document.getElementById('unlockBtn');
-    
+
     // Get episode info
     const urlParams = new URLSearchParams(window.location.search);
     const slug = urlParams.get('series');
     const season = urlParams.get('season');
     const ep = urlParams.get('ep');
-    
+
     if (!slug || !season || !ep) {
       console.error('Missing episode parameters');
       return;
     }
-    
+
     const unlockKey = 'unlocked_' + slug + '_s' + season + '_e' + ep;
     const unlockTimeKey = unlockKey + '_time';
-    
+
     // Check if unlocked and not expired (24 hours)
     function isUnlocked() {
       const unlockTime = localStorage.getItem(unlockTimeKey);
       if (!unlockTime) return false;
-      
+
       const now = new Date().getTime();
       const unlockTimestamp = parseInt(unlockTime);
       const hoursPassed = (now - unlockTimestamp) / (1000 * 60 * 60);
-      
+
       // If more than 24 hours, remove unlock
       if (hoursPassed >= 24) {
         localStorage.removeItem(unlockKey);
         localStorage.removeItem(unlockTimeKey);
         return false;
       }
-      
+
       return localStorage.getItem(unlockKey) === 'true';
     }
-    
+
     // Show popup if not unlocked or expired
     if (!isUnlocked()) {
       setTimeout(function() {
         popup.style.display = 'block';
       }, 500);
     }
-    
+
     // Handle unlock button click
     if (unlockBtn) {
       unlockBtn.addEventListener('click', function() {
         localStorage.setItem(unlockKey + '_clicked', 'true');
       });
     }
-    
+
     // Check when user returns from link
     window.addEventListener('focus', function() {
       if (localStorage.getItem(unlockKey + '_clicked') === 'true') {
@@ -391,26 +480,26 @@
         startCountdown();
       }
     });
-    
+
     // Start 5-second countdown
     function startCountdown() {
       mainContent.style.display = 'none';
       timerSection.style.display = 'block';
-      
+
       let timeLeft = 5;
       timerDisplay.textContent = timeLeft;
-      
+
       const countdown = setInterval(function() {
         timeLeft--;
         timerDisplay.textContent = timeLeft;
-        
+
         if (timeLeft <= 0) {
           clearInterval(countdown);
           unlockEpisode();
         }
       }, 1000);
     }
-    
+
     // Unlock and hide popup with 24-hour timestamp
     function unlockEpisode() {
       const now = new Date().getTime();
