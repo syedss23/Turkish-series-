@@ -30,7 +30,7 @@
       min-height: 100vh;
     }
 
-    /* Full-screen transparent overlay */
+    /* Ultra-light overlay so episodes are clearly visible */
     #unlockPopup {
       display: none;
       position: fixed;
@@ -39,13 +39,14 @@
       height: 100%;
       z-index: 99999;
       padding: 16px;
-      /* ultra transparent so background is clearly visible */
-      background:
-        radial-gradient(circle at 0% 0%, rgba(0, 208, 240, 0.18), transparent 60%),
-        radial-gradient(circle at 100% 100%, rgba(255, 212, 0, 0.16), transparent 55%),
-        rgba(0, 0, 0, 0.15);
-      backdrop-filter: blur(22px) saturate(150%);
-      -webkit-backdrop-filter: blur(22px) saturate(150%);
+
+      /* Very transparent black veil */
+      background: rgba(0, 0, 0, 0.04);
+
+      /* Light blur for glassy feel */
+      backdrop-filter: blur(4px) saturate(130%);
+      -webkit-backdrop-filter: blur(4px) saturate(130%);
+
       overflow-y: auto;
     }
 
@@ -56,42 +57,49 @@
       justify-content: center;
     }
 
-    /* Glassmorphism card */
+    /* Glassmorphism card – lighter & more transparent */
     .popup-card {
       max-width: 460px;
       width: 100%;
       border-radius: 24px;
-      padding: 26px 22px 24px;
+      padding: 24px 20px 20px;
       position: relative;
       overflow: hidden;
-      background: radial-gradient(circle at top left,
-                  rgba(102, 126, 234, 0.16),
-                  rgba(10, 15, 30, 0.90));
-      border: 1px solid rgba(255, 255, 255, 0.18);
+
+      /* Semi-transparent dark glass with a bit of gradient */
+      background:
+        linear-gradient(135deg,
+          rgba(11, 18, 35, 0.82),
+          rgba(11, 18, 35, 0.60));
+
+      border: 1px solid rgba(255, 255, 255, 0.20);
       box-shadow:
-        0 22px 60px rgba(0, 0, 0, 0.45),
-        0 0 0 1px rgba(0, 0, 0, 0.4);
-      animation: popupIn 0.35s ease-out forwards;
+        0 20px 50px rgba(0, 0, 0, 0.55);
+
+      animation: popupIn 0.30s ease-out forwards;
     }
 
+    /* Soft neon edge highlight */
     .popup-card::before {
       content: "";
       position: absolute;
       inset: -1px;
       pointer-events: none;
       background:
-        linear-gradient(135deg,
-          rgba(0, 208, 240, 0.85),
-          rgba(120, 94, 255, 0.75),
-          rgba(255, 212, 0, 0.85));
-      opacity: 0.12;
+        radial-gradient(circle at 0% 0%,
+          rgba(0, 208, 240, 0.7),
+          transparent 55%),
+        radial-gradient(circle at 100% 100%,
+          rgba(255, 212, 0, 0.7),
+          transparent 55%);
+      opacity: 0.18;
       mix-blend-mode: screen;
     }
 
     @keyframes popupIn {
       from {
         opacity: 0;
-        transform: translateY(18px) scale(0.96);
+        transform: translateY(14px) scale(0.97);
       }
       to {
         opacity: 1;
@@ -101,71 +109,73 @@
 
     .popup-header {
       text-align: center;
-      margin-bottom: 22px;
+      margin-bottom: 20px;
       position: relative;
       z-index: 1;
     }
 
     .popup-lock-icon {
-      font-size: 34px;
+      font-size: 32px;
       margin-bottom: 10px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 54px;
-      height: 54px;
+      width: 52px;
+      height: 52px;
       border-radius: 999px;
       background: radial-gradient(circle at 30% 0%,
-                  rgba(0, 208, 240, 0.9),
-                  rgba(18, 27, 56, 0.4));
+                  rgba(0, 208, 240, 0.95),
+                  rgba(18, 27, 56, 0.6));
       box-shadow:
-        0 0 18px rgba(0, 208, 240, 0.75),
-        0 10px 28px rgba(0, 0, 0, 0.8);
+        0 0 20px rgba(0, 208, 240, 0.9),
+        0 10px 24px rgba(0, 0, 0, 0.8);
     }
 
     .popup-header h2 {
-      color: #e9f4ff;
-      font-size: 24px;
-      margin: 8px 0 4px;
+      color: #f4f7ff;
+      font-size: 23px;
+      margin: 6px 0 4px;
       font-weight: 800;
       letter-spacing: 0.03em;
     }
 
     .popup-header p {
-      color: rgba(230, 240, 255, 0.8);
+      color: rgba(225, 235, 255, 0.86);
       font-size: 14px;
       margin: 0;
       font-weight: 500;
     }
 
-    /* Sponsor block */
+    /* Sponsor block – cleaner & more glassy */
     .sponsor-section {
       position: relative;
       z-index: 1;
-      background: radial-gradient(circle at 0 0,
-                    rgba(0, 208, 240, 0.16),
-                    transparent 60%);
       border-radius: 18px;
-      padding: 18px 16px 16px;
-      margin-bottom: 18px;
-      border: 1px solid rgba(0, 208, 240, 0.35);
+      padding: 16px 15px 16px;
+      margin-bottom: 16px;
+
+      background:
+        linear-gradient(145deg,
+          rgba(255, 255, 255, 0.03),
+          rgba(0, 0, 0, 0.25));
+      border: 1px solid rgba(139, 233, 255, 0.55);
     }
 
     .sponsor-section h3 {
       color: #8be9ff;
-      font-size: 15px;
+      font-size: 14px;
       margin: 0 0 10px;
       text-align: center;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.10em;
     }
 
     .sponsor-brand-container {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 14px;
+      gap: 12px;
       margin-bottom: 10px;
     }
 
@@ -174,13 +184,14 @@
       height: 44px;
       border-radius: 14px;
       object-fit: cover;
-      border: 2px solid rgba(255, 212, 0, 0.4);
-      box-shadow: 0 6px 18px rgba(255, 212, 0, 0.5);
+      border: 2px solid rgba(255, 212, 0, 0.6);
+      box-shadow:
+        0 6px 16px rgba(255, 212, 0, 0.7);
     }
 
     .sponsor-brand {
       color: #ffd962;
-      font-size: 22px;
+      font-size: 21px;
       font-weight: 900;
       text-shadow:
         0 0 16px rgba(255, 212, 0, 0.85),
@@ -188,90 +199,98 @@
     }
 
     .unlock-message {
-      color: rgba(235, 244, 255, 0.86);
+      color: rgba(235, 244, 255, 0.90);
       text-align: center;
-      margin: 0 4px 16px;
-      font-size: 14px;
+      margin: 0 4px 14px;
+      font-size: 13px;
       line-height: 1.6;
       font-weight: 500;
     }
 
+    /* Main unlock button */
     .unlock-btn {
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 10px;
-      padding: 15px 24px;
+      padding: 14px 22px;
       width: 100%;
       border-radius: 999px;
       border: none;
       text-decoration: none;
       cursor: pointer;
       font-weight: 800;
-      font-size: 15px;
-      letter-spacing: 0.06em;
+      font-size: 14px;
+      letter-spacing: 0.09em;
       text-transform: uppercase;
+
       background: linear-gradient(135deg,
             #667eea 0%,
             #764ba2 45%,
             #f093fb 100%);
       color: #fff;
+
       box-shadow:
-        0 14px 32px rgba(118, 75, 162, 0.65),
-        0 0 26px rgba(240, 147, 251, 0.75);
-      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.38);
-      transition: transform 0.2s ease, box-shadow 0.2s ease,
-                  filter 0.15s ease;
+        0 12px 28px rgba(118, 75, 162, 0.7),
+        0 0 26px rgba(240, 147, 251, 0.8);
+      text-shadow: 0 2px 7px rgba(0, 0, 0, 0.45);
+      transition: transform 0.18s ease,
+                  box-shadow 0.18s ease,
+                  filter 0.12s ease;
     }
 
     .unlock-btn:hover {
-      transform: translateY(-2px);
-      filter: brightness(1.05);
+      transform: translateY(-1.5px);
+      filter: brightness(1.06);
       box-shadow:
-        0 18px 40px rgba(118, 75, 162, 0.9),
-        0 0 34px rgba(240, 147, 251, 0.95);
+        0 16px 36px rgba(118, 75, 162, 0.9),
+        0 0 32px rgba(240, 147, 251, 1);
     }
 
     .unlock-btn:active {
       transform: translateY(0);
       box-shadow:
-        0 10px 24px rgba(118, 75, 162, 0.6),
-        0 0 22px rgba(240, 147, 251, 0.75);
+        0 9px 22px rgba(118, 75, 162, 0.6),
+        0 0 20px rgba(240, 147, 251, 0.75);
     }
 
-    /* Sponsor CTA */
+    /* Sponsor CTA block */
     .contact-section {
       position: relative;
       z-index: 1;
-      margin-top: 16px;
-      background: radial-gradient(circle at 100% 0,
-                    rgba(255, 212, 0, 0.18),
-                    transparent 60%);
-      border-radius: 16px;
-      padding: 16px 14px 14px;
-      border: 1px solid rgba(255, 212, 0, 0.35);
+      margin-top: 14px;
+      border-radius: 18px;
+      padding: 14px 13px 14px;
+
+      background:
+        linear-gradient(145deg,
+          rgba(255, 255, 255, 0.02),
+          rgba(0, 0, 0, 0.28));
+      border: 1px solid rgba(255, 212, 0, 0.55);
+
       text-align: center;
     }
 
     .contact-section h3 {
       color: #ffd962;
       font-size: 16px;
-      margin: 0 0 6px;
+      margin: 0 0 4px;
       font-weight: 800;
     }
 
     .contact-section p {
-      color: rgba(240, 244, 255, 0.88);
+      color: rgba(240, 244, 255, 0.90);
       font-size: 13px;
       line-height: 1.55;
-      margin: 0 4px 12px;
+      margin: 0 4px 10px;
     }
 
     .contact-btn {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 10px 20px;
+      padding: 9px 19px;
+
       background: linear-gradient(90deg,
                   rgba(255, 212, 0, 0.96),
                   rgba(255, 179, 87, 0.98));
@@ -281,15 +300,16 @@
       border-radius: 999px;
       text-decoration: none;
       box-shadow:
-        0 10px 24px rgba(255, 212, 0, 0.65),
-        0 0 20px rgba(255, 212, 0, 0.9);
-      transition: transform 0.18s ease, box-shadow 0.18s ease;
+        0 10px 24px rgba(255, 212, 0, 0.7),
+        0 0 20px rgba(255, 212, 0, 1);
+      transition: transform 0.16s ease,
+                  box-shadow 0.16s ease;
     }
 
     .contact-btn:hover {
       transform: translateY(-1px);
       box-shadow:
-        0 14px 32px rgba(255, 212, 0, 0.8),
+        0 14px 30px rgba(255, 212, 0, 0.9),
         0 0 26px rgba(255, 212, 0, 1);
     }
 
@@ -297,26 +317,26 @@
     .timer-section {
       display: none;
       text-align: center;
-      padding: 42px 12px 26px;
+      padding: 32px 12px 20px;
       position: relative;
       z-index: 1;
     }
 
     .timer-message {
       color: #00e0ff;
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 700;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
       text-shadow: 0 3px 15px rgba(0, 208, 240, 0.6);
     }
 
     .timer-display {
-      font-size: 64px;
+      font-size: 56px;
       font-weight: 900;
       color: #ff4a4a;
       text-shadow:
-        0 0 24px rgba(255, 74, 74, 0.9),
-        0 0 52px rgba(255, 74, 74, 0.75);
+        0 0 22px rgba(255, 74, 74, 0.95),
+        0 0 46px rgba(255, 74, 74, 0.8);
       animation: glow 1s ease-in-out infinite alternate;
       line-height: 1;
     }
@@ -336,11 +356,11 @@
 
     @media (max-width: 520px) {
       #unlockPopup {
-        padding: 12px;
+        padding: 10px;
       }
       .popup-card {
-        padding: 22px 18px 20px;
-        border-radius: 22px;
+        padding: 22px 16px 18px;
+        border-radius: 20px;
       }
       .popup-header h2 {
         font-size: 20px;
@@ -349,7 +369,7 @@
         font-size: 18px;
       }
       .timer-display {
-        font-size: 52px;
+        font-size: 48px;
       }
     }
   </style>
