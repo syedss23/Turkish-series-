@@ -419,7 +419,7 @@
 
           <div class="contact-section">
             <h3>Become a Sponsor</h3>
-            <p>Advertise your brand here and reach thousands of active Urdu series viewers every day.</p>
+            <p>Advertise your brand here and reach thousands of active viewers every day.</p>
             <a href="mailto:contact@smtvurdu.com" class="contact-btn">
               <i class="fas fa-envelope"></i>
               Contact Us
@@ -459,6 +459,9 @@
 
     const unlockKey = 'unlocked_' + slug + '_s' + season + '_e' + ep;
     const unlockTimeKey = unlockKey + '_time';
+    const clickedFlagKey = unlockKey + '_clicked';
+
+    let hasBlurredSinceClick = false;
 
     // Check if unlocked and not expired (24 hours)
     function isUnlocked() {
@@ -466,7 +469,7 @@
       if (!unlockTime) return false;
 
       const now = new Date().getTime();
-      const unlockTimestamp = parseInt(unlockTime);
+      const unlockTimestamp = parseInt(unlockTime, 10);
       const hoursPassed = (now - unlockTimestamp) / (1000 * 60 * 60);
 
       // If more than 24 hours, remove unlock
@@ -478,28 +481,6 @@
 
       return localStorage.getItem(unlockKey) === 'true';
     }
-
-    // Show popup if not unlocked or expired
-    if (!isUnlocked()) {
-      setTimeout(function() {
-        popup.style.display = 'block';
-      }, 500);
-    }
-
-    // Handle unlock button click
-    if (unlockBtn) {
-      unlockBtn.addEventListener('click', function() {
-        localStorage.setItem(unlockKey + '_clicked', 'true');
-      });
-    }
-
-    // Check when user returns from link
-    window.addEventListener('focus', function() {
-      if (localStorage.getItem(unlockKey + '_clicked') === 'true') {
-        localStorage.removeItem(unlockKey + '_clicked');
-        startCountdown();
-      }
-    });
 
     // Start 5-second countdown
     function startCountdown() {
@@ -527,6 +508,48 @@
       localStorage.setItem(unlockTimeKey, now.toString());
       popup.style.display = 'none';
     }
+
+    // If already unlocked, don't show popup
+    if (!isUnlocked()) {
+      setTimeout(function() {
+        popup.style.display = 'block';
+      }, 500);
+    }
+
+    // If user is coming back via back navigation or reload after clicking
+    if (!isUnlocked() && localStorage.getItem(clickedFlagKey) === 'true') {
+      // Immediately start countdown on return
+      startCountdown();
+      localStorage.removeItem(clickedFlagKey);
+    }
+
+    // Handle unlock button click
+    if (unlockBtn) {
+      unlockBtn.addEventListener('click', function() {
+        // Mark that user clicked the link
+        localStorage.setItem(clickedFlagKey, 'true');
+      });
+    }
+
+    // Track that user actually left the page after clicking
+    window.addEventListener('blur', function() {
+      if (localStorage.getItem(clickedFlagKey) === 'true') {
+        hasBlurredSinceClick = true;
+      }
+    });
+
+    // When user comes back to the page, start countdown ONLY if they left
+    window.addEventListener('focus', function() {
+      if (
+        !isUnlocked() &&
+        localStorage.getItem(clickedFlagKey) === 'true' &&
+        hasBlurredSinceClick
+      ) {
+        hasBlurredSinceClick = false;
+        localStorage.removeItem(clickedFlagKey);
+        startCountdown();
+      }
+    });
   })();
   </script>
 </body>
