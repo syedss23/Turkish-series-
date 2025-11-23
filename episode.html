@@ -146,20 +146,6 @@
       font-weight: 500;
     }
 
-    /* ❗ New: Fail message (small, non-intrusive) */
-    .fail-message {
-      display: none;
-      margin-bottom: 12px;
-      padding: 10px 12px;
-      border-radius: 10px;
-      text-align: center;
-      font-size: 13px;
-      font-weight: 600;
-      background: rgba(255, 71, 87, 0.16);
-      border: 1px solid rgba(255, 71, 87, 0.6);
-      color: #ff9fa8;
-    }
-
     /* Sponsor block – cleaner & more glassy */
     .sponsor-section {
       position: relative;
@@ -214,7 +200,7 @@
 
     .unlock-message {
       color: rgba(235, 244, 255, 0.90);
-      text-align: center;
+      text-align:center;
       margin: 0 4px 14px;
       font-size: 13px;
       line-height: 1.6;
@@ -411,11 +397,6 @@
             <p>Join our sponsor channel to watch this episode</p>
           </div>
 
-          <!-- New fail message -->
-          <div id="failMessage" class="fail-message">
-            You returned too fast or you returned without joining.
-          </div>
-
           <div class="sponsor-section">
             <h3>Episode Sponsored By</h3>
 
@@ -449,14 +430,14 @@
         <!-- Timer Countdown -->
         <div id="timerSection" class="timer-section">
           <div class="timer-message">⏳ Unlocking Episode...</div>
-          <div class="timer-display" id="timerDisplay">5</div>
+          <div class="timer-display" id="timerDisplay">10</div>
         </div>
 
       </div>
     </div>
   </div>
 
-  <!-- Unlock System with 24-hour expiry + 5–7s away time -->
+  <!-- Unlock System with 24-hour expiry + 10s countdown after return -->
   <script>
   (function() {
     const popup = document.getElementById('unlockPopup');
@@ -464,7 +445,6 @@
     const timerSection = document.getElementById('timerSection');
     const timerDisplay = document.getElementById('timerDisplay');
     const unlockBtn = document.getElementById('unlockBtn');
-    const failMessage = document.getElementById('failMessage');
 
     // Get episode info
     const urlParams = new URLSearchParams(window.location.search);
@@ -482,8 +462,6 @@
     const clickedFlagKey = unlockKey + '_clicked';
 
     let hasBlurredSinceClick = false;
-    let blurTime = null;
-    let minAwaySeconds = null; // will be 5, 6, or 7
 
     // Check if unlocked and not expired (24 hours)
     function isUnlocked() {
@@ -504,12 +482,12 @@
       return localStorage.getItem(unlockKey) === 'true';
     }
 
-    // Start 5-second countdown
+    // Start 10-second countdown
     function startCountdown() {
       mainContent.style.display = 'none';
       timerSection.style.display = 'block';
 
-      let timeLeft = 5;
+      let timeLeft = 10;
       timerDisplay.textContent = timeLeft;
 
       const countdown = setInterval(function() {
@@ -538,16 +516,19 @@
       }, 500);
     }
 
+    // If user is coming back via back navigation or reload after clicking
+    if (!isUnlocked() && localStorage.getItem(clickedFlagKey) === 'true') {
+      // Immediately start countdown on return page load
+      startCountdown();
+      localStorage.removeItem(clickedFlagKey);
+    }
+
     // Handle unlock button click
     if (unlockBtn) {
       unlockBtn.addEventListener('click', function() {
         // Mark that user clicked the link
         localStorage.setItem(clickedFlagKey, 'true');
         hasBlurredSinceClick = false;
-        blurTime = null;
-        failMessage.style.display = 'none';
-        // random away time: 5, 6, or 7 seconds
-        minAwaySeconds = 5 + Math.floor(Math.random() * 3);
       });
     }
 
@@ -555,34 +536,17 @@
     window.addEventListener('blur', function() {
       if (localStorage.getItem(clickedFlagKey) === 'true') {
         hasBlurredSinceClick = true;
-        blurTime = Date.now();
       }
     });
 
-    // When user comes back to the page, start countdown ONLY if they stayed away enough
+    // When user comes back to the page, start countdown ONLY if they left
     window.addEventListener('focus', function() {
       if (
         !isUnlocked() &&
         localStorage.getItem(clickedFlagKey) === 'true' &&
         hasBlurredSinceClick
       ) {
-        const now = Date.now();
-        const awaySeconds = blurTime ? (now - blurTime) / 1000 : 0;
-        const required = minAwaySeconds || 5;
-
-        if (awaySeconds < required) {
-          // returned too fast
-          failMessage.style.display = 'block';
-          // reset flags, but keep popup and button
-          hasBlurredSinceClick = false;
-          blurTime = null;
-          localStorage.removeItem(clickedFlagKey);
-          return;
-        }
-
-        // stayed away long enough → start countdown
         hasBlurredSinceClick = false;
-        blurTime = null;
         localStorage.removeItem(clickedFlagKey);
         startCountdown();
       }
