@@ -59,55 +59,72 @@ Promise.all([
         </div>
 
         <!-- Sponsor Announcement -->
-        <div class="fullscreen-alert-msg" style="
-          background: linear-gradient(90deg, #223958 20%, #091728 90%);
-          padding: 15px 14px 20px 14px;
-          border-radius: 10px;
-          border: 2px solid #23c6ed;
-          color: #23c6ed;
-          font-size: 1.07em;
-          margin: 18px 0 20px 0;
-          font-family: inherit;
-          font-weight: 600;
-          line-height: 1.5;">
-          
-          <span style="font-size:1.08em; color:#ffd700;">💼 Episode Sponsor:</span><br>
+<div class="fullscreen-alert-msg" style="
+  background: linear-gradient(90deg, #223958 20%, #091728 90%);
+  padding: 15px 14px 22px 14px;
+  border-radius: 10px;
+  border: 2px solid #23c6ed;
+  color: #23c6ed;
+  font-size: 1.07em;
+  margin: 18px 0 20px 0;
+  font-family: inherit;
+  font-weight: 600;
+  line-height: 1.5;
+  text-align:center;">
 
-          <span style="font-size:1em;">
-            <span style="color:#ffd700;">SmTv Forex Signals</span><br>
-            Rozana <b>Forex &amp; Gold (XAUUSD) trading signals</b> ke saath  
-            clear <b>Entry · SL · TP</b>, risk-managed setups &amp; live updates paayein.<br><br>
+  <!-- Sponsor Logo -->
+  <img src="sponsor.png"
+       alt="Sponsor Logo"
+       style="width:60px;height:60px;object-fit:cover;border-radius:12px;
+       border:2px solid rgba(255,212,0,0.6);
+       box-shadow:0 6px 16px rgba(255,212,0,0.6);
+       margin-bottom:8px;">
 
-            Chahe beginner ho ya pro, smart signals follow karke  
-            <b>aasani se earning start kar sakte ho</b> – sahi risk management ke saath  
-            <b>lakhs tak kamaane ka mauka</b> 🚀<br><br>
+  <!-- Sponsor Title -->
+  <div style="font-size:1.12em;color:#ffd700;margin-top:5px;">
+    Episode Sponsored by <span style="color:#fff;font-weight:800;">SmTv Forex Signals</span>
+  </div>
 
-            <!-- ⭐ START EARNING BUTTON ⭐ -->
-            <a href="https://whatsapp.com/channel/0029Va9zAvvAYlUNRuzWqh0k"
-              target="_blank"
-              style="
-                display:inline-block;
-                margin-top:6px;
-                background:linear-gradient(135deg,#ffd22e,#ff9f00);
-                color:#000;
-                font-weight:800;
-                padding:10px 18px;
-                border-radius:12px;
-                text-decoration:none;
-                box-shadow:0 6px 14px rgba(255,165,0,0.45);
-                font-size:0.95em;
-                letter-spacing:0.5px;">
-              🚀 Start Earning Now
-            </a>
-            <br><br>
+  <!-- Sponsor Description -->
+  <div style="font-size:1em;margin-top:10px;">
+    Rozana <b>Forex &amp; Gold (XAUUSD)</b> trading signals ke saath  
+    clear <b>Entry · SL · TP</b>, risk-managed setups &amp; live updates paayein.<br><br>
 
-            <span style="font-size:0.86em;color:#ffb3b3;font-weight:500;">
-              *Trading Forex &amp; Gold mein risk hota hai. Profit guaranteed nahi hota.  
-              Hamesha apni research ke baad hi trade karein.
-            </span>
-          </span>
-        </div>
+    Chahe beginner ho ya pro, smart signals follow karke  
+    <b>aasani se earning start kar sakte ho</b> — sahi risk management ke saath  
+    <b>lakhs tak kamaane ka mauka</b> mil sakta hai 🚀<br><br>
+  </div>
 
+  <!-- Start Earning Button -->
+  <a href="https://whatsapp.com/channel/0029Va9zAvvAYlUNRuzWqh0k"
+     target="_blank"
+     style="
+       display:inline-block;
+       background:linear-gradient(135deg,#ffd22e,#ff9f00);
+       color:#000;
+       font-weight:800;
+       padding:10px 22px;
+       border-radius:12px;
+       text-decoration:none;
+       box-shadow:0 6px 14px rgba(255,165,0,0.45);
+       font-size:0.95em;
+       letter-spacing:0.5px;">
+    🚀 Start Earning Now
+  </a>
+
+  <!-- Disclaimer Title -->
+  <div style="margin-top:14px;font-size:1em;color:#ffd700;">
+    ⚠️ Disclaimer:
+  </div>
+
+  <!-- Disclaimer Text -->
+  <div style="font-size:0.86em;color:#ffb3b3;font-weight:500;margin-top:4px;">
+    Forex &amp; Gold trading high-risk hoti hai.  
+    Profit guaranteed nahi hota.  
+    Hamesha apni research aur sahi risk management ke saath trade karein.
+  </div>
+
+</div>
         <!-- Player 1 -->
         <div class="pro-episode-embed-polished">
           ${ep.embed ? ep.embed : '<div style="padding:50px 0;color:#ccc;text-align:center;">No streaming available</div>'}
