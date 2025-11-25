@@ -25,12 +25,10 @@
       overflow-x: hidden;
     }
 
-    /* Episode view - always visible */
     #episode-view {
       min-height: 100vh;
     }
 
-    /* Ultra-light overlay so episodes are clearly visible */
     #unlockPopup {
       display: none;
       position: fixed;
@@ -39,14 +37,9 @@
       height: 100%;
       z-index: 99999;
       padding: 16px;
-
-      /* Very transparent black veil */
       background: rgba(0, 0, 0, 0.04);
-
-      /* Light blur for glassy feel */
       backdrop-filter: blur(4px) saturate(130%);
       -webkit-backdrop-filter: blur(4px) saturate(130%);
-
       overflow-y: auto;
     }
 
@@ -57,7 +50,6 @@
       justify-content: center;
     }
 
-    /* Glassmorphism card – lighter & more transparent */
     .popup-card {
       max-width: 460px;
       width: 100%;
@@ -65,21 +57,15 @@
       padding: 24px 20px 20px;
       position: relative;
       overflow: hidden;
-
-      /* Semi-transparent dark glass with a bit of gradient */
       background:
         linear-gradient(135deg,
           rgba(11, 18, 35, 0.82),
           rgba(11, 18, 35, 0.60));
-
       border: 1px solid rgba(255, 255, 255, 0.20);
-      box-shadow:
-        0 20px 50px rgba(0, 0, 0, 0.55);
-
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
       animation: popupIn 0.30s ease-out forwards;
     }
 
-    /* Soft neon edge highlight */
     .popup-card::before {
       content: "";
       position: absolute;
@@ -146,14 +132,12 @@
       font-weight: 500;
     }
 
-    /* Sponsor block – cleaner & more glassy */
     .sponsor-section {
       position: relative;
       z-index: 1;
       border-radius: 18px;
       padding: 16px 15px 16px;
       margin-bottom: 16px;
-
       background:
         linear-gradient(145deg,
           rgba(255, 255, 255, 0.03),
@@ -185,8 +169,7 @@
       border-radius: 14px;
       object-fit: cover;
       border: 2px solid rgba(255, 212, 0, 0.6);
-      box-shadow:
-        0 6px 16px rgba(255, 212, 0, 0.7);
+      box-shadow: 0 6px 16px rgba(255, 212, 0, 0.7);
     }
 
     .sponsor-brand {
@@ -207,7 +190,6 @@
       font-weight: 500;
     }
 
-    /* Main unlock button */
     .unlock-btn {
       display: flex;
       align-items: center;
@@ -223,13 +205,11 @@
       font-size: 14px;
       letter-spacing: 0.09em;
       text-transform: uppercase;
-
       background: linear-gradient(135deg,
             #667eea 0%,
             #764ba2 45%,
             #f093fb 100%);
       color: #fff;
-
       box-shadow:
         0 12px 28px rgba(118, 75, 162, 0.7),
         0 0 26px rgba(240, 147, 251, 0.8);
@@ -252,20 +232,17 @@
         0 0 20px rgba(240, 147, 251, 0.75);
     }
 
-    /* Sponsor CTA block */
     .contact-section {
       position: relative;
       z-index: 1;
       margin-top: 14px;
       border-radius: 18px;
       padding: 14px 13px 14px;
-
       background:
         linear-gradient(145deg,
           rgba(255, 255, 255, 0.02),
           rgba(0, 0, 0, 0.28));
       border: 1px solid rgba(255, 212, 0, 0.55);
-
       text-align: center;
     }
 
@@ -288,7 +265,6 @@
       align-items: center;
       gap: 6px;
       padding: 9px 19px;
-
       background: linear-gradient(90deg,
                   rgba(255, 212, 0, 0.96),
                   rgba(255, 179, 87, 0.98));
@@ -335,7 +311,7 @@
   <script defer src="episode.js"></script>
 </head>
 <body>
-  <!-- Episode Player (Always visible in background) -->
+  <!-- Episode Player -->
   <div id="episode-view"></div>
 
   <!-- Unlock Popup -->
@@ -344,9 +320,9 @@
       <div class="popup-card">
 
         <div class="popup-header">
-          <div class="popup-lock-icon">🔒</div>
-          <h2>Unlock Episode</h2>
-          <p>Join our sponsor channel to watch this episode</p>
+          <div class="popup-lock-icon">⏳</div>
+          <h2 id="popupTitle">Unlocking Episode...</h2>
+          <p id="popupSubtitle">Episode <span id="episodeNumber">1</span></p>
         </div>
 
         <div class="sponsor-section">
@@ -357,11 +333,10 @@
             <div class="sponsor-brand">FX Reall Accadmy</div>
           </div>
 
-          <p class="unlock-message">
+          <p class="unlock-message" id="unlockMessage">
             Join our sponsor channel to unlock and watch this episode
           </p>
 
-          <!-- Unlock Button -->
           <a href="https://t.me/+OKnw3z4Uq28wYzRk"
              target="_blank"
              class="unlock-btn"
@@ -384,14 +359,19 @@
     </div>
   </div>
 
-  <!-- NEW Unlock System -->
+  <!-- Unlock System: Every 5th Episode Requires Unlock -->
   <script>
   (function() {
     const popup = document.getElementById('unlockPopup');
     const unlockBtn = document.getElementById('unlockBtn');
     const btnText = document.getElementById('btnText');
+    const popupTitle = document.getElementById('popupTitle');
+    const popupSubtitle = document.getElementById('popupSubtitle');
+    const episodeNumber = document.getElementById('episodeNumber');
+    const unlockMessage = document.getElementById('unlockMessage');
+    const lockIcon = document.querySelector('.popup-lock-icon');
 
-    // Episode info
+    // Get episode info
     const urlParams = new URLSearchParams(window.location.search);
     const slug = urlParams.get('series');
     const season = urlParams.get('season');
@@ -402,19 +382,30 @@
       return;
     }
 
+    // Update episode number in UI
+    episodeNumber.textContent = ep;
+
     const unlockKey = 'unlocked_' + slug + '_s' + season + '_e' + ep;
     const unlockTimeKey = unlockKey + '_time';
 
-    // Check if already unlocked (24h expiry)
-    function isUnlocked() {
+    // Check if episode requires unlock (episodes 1, 5, 10, 15, 20, etc.)
+    function requiresUnlock(episodeNum) {
+      const num = parseInt(episodeNum);
+      
+      // Episode 1 always requires unlock
+      if (num === 1) return true;
+      
+      // Every 5th episode requires unlock (5, 10, 15, 20...)
+      return num % 5 === 0;
+    }
+
+    // Check if THIS episode is already unlocked (24h expiry)
+    function isEpisodeUnlocked() {
       const unlockTime = localStorage.getItem(unlockTimeKey);
       if (!unlockTime) return false;
 
-      const now = new Date().getTime();
-      const unlockTimestamp = parseInt(unlockTime, 10);
-      const hoursPassed = (now - unlockTimestamp) / (1000 * 60 * 60);
+      const hoursPassed = (Date.now() - parseInt(unlockTime)) / (1000 * 60 * 60);
 
-      // If more than 24 hours, remove unlock
       if (hoursPassed >= 24) {
         localStorage.removeItem(unlockKey);
         localStorage.removeItem(unlockTimeKey);
@@ -424,44 +415,103 @@
       return localStorage.getItem(unlockKey) === 'true';
     }
 
-    // Show popup if not unlocked
-    if (!isUnlocked()) {
+    // Update message based on episode number
+    function updatePopupMessage() {
+      const epNum = parseInt(ep);
+      
+      if (epNum === 1) {
+        unlockMessage.textContent = '🎬 Welcome! Join our sponsor to start watching this series';
+      } else if (epNum % 5 === 0) {
+        const nextFree = epNum + 1;
+        const freeUntil = epNum + 4;
+        unlockMessage.textContent = `📺 Unlock episode ${epNum} to watch free until episode ${freeUntil}`;
+      } else {
+        unlockMessage.textContent = 'Join our sponsor channel to unlock this episode';
+      }
+    }
+
+    // Check if we should show popup
+    if (!isEpisodeUnlocked() && requiresUnlock(ep)) {
+      // This episode requires unlock
+      updatePopupMessage();
       setTimeout(function() {
         popup.style.display = 'block';
       }, 500);
+    } else if (!isEpisodeUnlocked()) {
+      // Free episode (2-4, 6-9, 11-14, etc.) - auto unlock
+      localStorage.setItem(unlockKey, 'true');
+      localStorage.setItem(unlockTimeKey, Date.now().toString());
+      
+      // Track free episode view
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'free_episode_watch', {
+          'episode': slug + '_s' + season + 'e' + ep
+        });
+      }
     }
 
     // Handle unlock button click
+    let isProcessing = false;
+
     unlockBtn.addEventListener('click', function(e) {
-      // Don't prevent default - let Telegram link open
+      if (isProcessing) {
+        // Second click - close popup
+        if (btnText.innerHTML.includes('Tap to Watch')) {
+          localStorage.setItem(unlockKey, 'true');
+          localStorage.setItem(unlockTimeKey, Date.now().toString());
+          popup.style.display = 'none';
+          
+          // Track unlock success
+          if (typeof gtag !== 'undefined') {
+            gtag('event', 'episode_watch_start', {
+              'episode': slug + '_s' + season + 'e' + ep,
+              'episode_type': requiresUnlock(ep) ? 'sponsored' : 'free'
+            });
+          }
+        }
+        return;
+      }
+
+      // First click - start checking
+      isProcessing = true;
       
-      // Step 1: Button turns light with "Checking..."
       unlockBtn.style.opacity = '0.6';
       unlockBtn.style.pointerEvents = 'none';
       btnText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
+      popupTitle.textContent = 'Verifying Membership...';
+      lockIcon.textContent = '⏳';
       
-      // Step 2: After 8 seconds, show green "Episode Unlocked"
+      // Track unlock attempt
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'episode_unlock_attempt', {
+          'episode': slug + '_s' + season + 'e' + ep,
+          'method': 'channel_join'
+        });
+      }
+      
+      // After 20 seconds - show success
       setTimeout(function() {
         unlockBtn.style.opacity = '1';
+        unlockBtn.style.pointerEvents = 'auto';
+        unlockBtn.style.cursor = 'pointer';
         unlockBtn.style.background = 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)';
         unlockBtn.style.boxShadow = '0 12px 28px rgba(17, 153, 142, 0.8), 0 0 32px rgba(56, 239, 125, 1)';
-        btnText.innerHTML = '<i class="fas fa-check-circle"></i> Episode Unlocked!';
+        btnText.innerHTML = '<i class="fas fa-check-circle"></i> Episode Unlocked! Tap to Watch';
+        popupTitle.textContent = 'Successfully Unlocked!';
+        popupSubtitle.textContent = 'Ready to watch Episode ' + ep;
+        lockIcon.textContent = '✅';
         
-        // Track unlock event in Google Analytics
+        // Show next unlock info
+        const nextUnlock = Math.ceil(parseInt(ep) / 5) * 5 + 5;
+        unlockMessage.textContent = `🎉 Enjoy! Next unlock required at episode ${nextUnlock}`;
+        
+        // Track successful unlock
         if (typeof gtag !== 'undefined') {
-          gtag('event', 'episode_unlock', {
-            'episode': slug + '_s' + season + 'e' + ep,
-            'method': 'channel_join'
+          gtag('event', 'episode_unlock_success', {
+            'episode': slug + '_s' + season + 'e' + ep
           });
         }
-        
-        // Step 3: After 3 more seconds, close popup
-        setTimeout(function() {
-          localStorage.setItem(unlockKey, 'true');
-          localStorage.setItem(unlockTimeKey, new Date().getTime().toString());
-          popup.style.display = 'none';
-        }, 3000);
-      }, 8000); // Change to 5000 for 5 seconds or 10000 for 10 seconds
+      }, 20000); // 20 seconds
     });
   })();
   </script>
