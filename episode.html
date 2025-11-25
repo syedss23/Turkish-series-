@@ -10,14 +10,14 @@
     gtag('config', 'G-WM3KEDD127');
   </script>
 
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>SM-TV – Streaming</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- Your main site styles -->
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 
-  <!-- Popup styles -->
+  <!-- Popup & video styles -->
   <style>
     body { margin: 0; padding: 0; overflow-x: hidden; }
     #episode-view { min-height: 100vh; }
@@ -128,8 +128,41 @@
       background:none; border:1px solid rgba(255,255,255,0.04); color:#fff; padding:6px 8px; border-radius:8px; cursor:pointer;
     }
     .howto-video-caption { padding:10px 12px; color:rgba(220,230,255,0.9); font-size:13px; line-height:1.45; }
-    .howto-video-wrap { position:relative; width:100%; height:0; padding-bottom:56.25%; background:#000; }
-    .howto-video-wrap iframe { position:absolute; top:0; left:0; width:100%; height:100%; border:0; }
+
+    /* REPLACED video wrapper for portrait videos */
+    .howto-video-wrap {
+      position: relative;
+      width: 100%;
+      padding-bottom: 0; /* allow tall portrait video */
+      height: min(80vh, 780px); /* allow tall vertical video up to 80% of viewport */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #000;
+    }
+    .howto-video-wrap iframe {
+      width: auto;
+      height: 100%;
+      max-width: 420px; /* phone-friendly; adjust for larger screens */
+      border: 0;
+      display: block;
+      margin: 0 auto;
+    }
+
+    /* Desktop / wide viewport fallback - use 16:9 */
+    @media (min-width: 900px) {
+      .howto-video-wrap {
+        padding-bottom: 56.25%;
+        height: auto;
+      }
+      .howto-video-wrap iframe {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%;
+        height: 100%;
+        max-width: none;
+      }
+    }
 
     @media (max-width:520px) {
       #unlockPopup { padding:10px; }
@@ -150,7 +183,7 @@
   <div id="episode-view"></div>
 
   <!-- Unlock Popup -->
-  <div id="unlockPopup">
+  <div id="unlockPopup" role="dialog" aria-modal="true" aria-label="Unlock Episode Popup">
     <div class="popup-container">
       <div class="popup-card">
 
@@ -164,7 +197,7 @@
           <h3>Episode Sponsored By</h3>
 
           <div class="sponsor-brand-container">
-            <img src="sponsor.png" alt="Sponsor Logo" class="sponsor-logo">
+            <img src="sponsor.png" alt="Sponsor Logo" class="sponsor-logo" />
             <div class="sponsor-brand">FX Reall Accadmy</div>
           </div>
 
@@ -175,13 +208,14 @@
           <!-- Main unlock button (original flow) -->
           <a href="https://t.me/+OKnw3z4Uq28wYzRk"
              target="_blank"
+             rel="noopener noreferrer"
              class="unlock-btn"
              id="unlockBtn">
             <i class="fas fa-paper-plane"></i>
             <span id="btnText">Join Channel & Unlock</span>
           </a>
 
-          <!-- How-to: inline video toggle (screenshots removed) -->
+          <!-- How-to: inline video toggle (single button) -->
           <div class="howto-row">
             <button class="howto-btn" id="openHowtoInlineBtn" type="button">
               <i class="fas fa-play-circle"></i> How to Unlock? (Watch Video)
@@ -189,10 +223,13 @@
           </div>
 
           <!-- Inline video block (appears beneath the buttons) -->
-          <div class="howto-video-block" id="howtoVideoBlock">
+          <div class="howto-video-block" id="howtoVideoBlock" aria-hidden="true">
             <div class="howto-video-header">
               <div class="howto-video-title">Process of how to Unlock</div>
-              <button class="howto-video-close" id="closeHowtoInlineBtn">Close</button>
+              <div style="display:flex;gap:8px;align-items:center;">
+                <button class="howto-video-close" id="howtoFullscreenHint" title="Tap ⤢ to fullscreen" style="display:none;background:none;border:0;color:#8fd3ff;font-weight:700;">⤢</button>
+                <button class="howto-video-close" id="closeHowtoInlineBtn">Close</button>
+              </div>
             </div>
             <div class="howto-video-caption">Ya Video dekho — Unlock kaisa karna — then tap <strong>Join Channel & Unlock</strong> below.</div>
             <div class="howto-video-wrap" id="howtoVideoWrap">
@@ -205,7 +242,7 @@
         <div class="contact-section">
           <h3>Become a Sponsor</h3>
           <p>Advertise your brand here and reach thousands of active viewers every day.</p>
-          <a href="https://t.me/itz_me_zain1" class="contact-btn">
+          <a href="https://t.me/itz_me_zain1" class="contact-btn" rel="noopener noreferrer">
             <i class="fas fa-envelope"></i>
             Contact Us
           </a>
@@ -215,7 +252,7 @@
     </div>
   </div>
 
-  <!-- Unlock System: Click Any Episode to Unlock 3 Episodes for 24 Hours -->
+  <!-- Unlock System + inline video handlers -->
   <script>
   (function() {
     const popup = document.getElementById('unlockPopup');
@@ -233,6 +270,9 @@
     const howtoVideoWrap = document.getElementById('howtoVideoWrap');
     const closeHowtoInlineBtn = document.getElementById('closeHowtoInlineBtn');
 
+    // Small fullscreen hint/button (we'll show the functional button instead)
+    const howtoFullscreenHint = document.getElementById('howtoFullscreenHint');
+
     // Rumble embed URL
     const rumbleEmbedUrl = 'https://rumble.com/embed/v7018ms/?pub=4ni0h4';
 
@@ -244,11 +284,12 @@
 
     if (!slug || !season || !ep) {
       console.error('Missing episode parameters');
-      return;
+      // still show the popup in case you want to debug, but we'll stop here for safety
+      // return;
     }
 
-    episodeNumber.textContent = ep;
-    const currentEp = parseInt(ep);
+    if (ep) episodeNumber.textContent = ep;
+    const currentEp = parseInt(ep) || 1;
 
     // Check if current episode is accessible via any unlock within 24 hours
     function isEpisodeAccessible(episodeNum) {
@@ -277,7 +318,6 @@
       const ep1 = currentEp;
       const ep2 = currentEp + 1;
       const ep3 = currentEp + 2;
-
       unlockMessage.textContent = `📺 Unlock to watch episodes ${ep1}, ${ep2}, and ${ep3} for 24 hours`;
       popupSubtitle.textContent = `Unlock 3 episodes starting from ${ep1}`;
     }
@@ -289,7 +329,7 @@
     } else {
       if (typeof gtag !== 'undefined') {
         gtag('event', 'episode_watch', {
-          'episode': slug + '_s' + season + 'e' + ep,
+          'episode': (slug||'') + '_s' + (season||'') + 'e' + (ep||''),
           'access_type': 'unlocked'
         });
       }
@@ -302,14 +342,12 @@
         if (btnText.innerHTML.includes('Tap to Watch')) {
           const unlockKey = 'unlocked_' + slug + '_s' + season + '_e' + currentEp;
           const unlockTimeKey = unlockKey + '_time';
-
           localStorage.setItem(unlockKey, 'true');
           localStorage.setItem(unlockTimeKey, Date.now().toString());
-
           popup.style.display = 'none';
           if (typeof gtag !== 'undefined') {
             gtag('event', 'episode_unlock_complete', {
-              'episode': slug + '_s' + season + 'e' + ep,
+              'episode': (slug||'') + '_s' + (season||'') + 'e' + (ep||''),
               'unlocks_count': 3
             });
           }
@@ -327,7 +365,7 @@
 
       if (typeof gtag !== 'undefined') {
         gtag('event', 'episode_unlock_attempt', {
-          'episode': slug + '_s' + season + 'e' + ep
+          'episode': (slug||'') + '_s' + (season||'') + 'e' + (ep||'')
         });
       }
 
@@ -350,44 +388,117 @@
 
         if (typeof gtag !== 'undefined') {
           gtag('event', 'episode_unlock_verified', {
-            'episode': slug + '_s' + season + 'e' + ep,
+            'episode': (slug||'') + '_s' + (season||'') + 'e' + (ep||''),
             'unlocked_episodes': ep1 + ',' + ep2 + ',' + ep3
           });
         }
       }, 15000); // 15s verification
     });
 
-    // ---------- Inline how-to handlers ----------
+    // ---------- Inline how-to handlers (portrait-friendly + fullscreen) ----------
     function openHowtoInline() {
       // inject iframe only once (destroyed when closed)
       if (!howtoVideoWrap.querySelector('iframe')) {
-        howtoVideoWrap.innerHTML = '<iframe class="rumble" src="' + rumbleEmbedUrl + '" allowfullscreen></iframe>';
+        const iframe = document.createElement('iframe');
+        iframe.className = 'rumble';
+        iframe.src = rumbleEmbedUrl;
+        iframe.setAttribute('allow', 'autoplay; fullscreen; picture-in-picture');
+        iframe.setAttribute('allowfullscreen', '');
+        iframe.setAttribute('referrerpolicy', 'no-referrer');
+        iframe.setAttribute('title', 'How to Unlock — quick guide');
+        howtoVideoWrap.appendChild(iframe);
       }
+
+      // create functional fullscreen button (⤢) near header if not exists
+      if (!document.getElementById('howtoFullscreenBtn')) {
+        const fsBtn = document.createElement('button');
+        fsBtn.id = 'howtoFullscreenBtn';
+        fsBtn.className = 'howto-video-close';
+        fsBtn.style.marginLeft = '8px';
+        fsBtn.style.fontWeight = '800';
+        fsBtn.title = 'Fullscreen';
+        fsBtn.innerHTML = '⤢';
+        // append next to Close button
+        const headerRight = document.querySelector('.howto-video-header div[style]');
+        if (headerRight) {
+          headerRight.insertBefore(fsBtn, headerRight.firstChild);
+        } else {
+          document.querySelector('.howto-video-header').appendChild(fsBtn);
+        }
+
+        fsBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const el = howtoVideoWrap;
+          if (el.requestFullscreen) {
+            el.requestFullscreen().catch(()=>{});
+          } else if (el.webkitRequestFullscreen) {
+            el.webkitRequestFullscreen();
+          } else if (el.msRequestFullscreen) {
+            el.msRequestFullscreen();
+          }
+        });
+      }
+
       howtoVideoBlock.style.display = 'block';
-      // scroll the popup card to bottom so the video is visible
+      howtoVideoBlock.setAttribute('aria-hidden', 'false');
+
+      // scroll the popup card to center so the video is visible
       setTimeout(() => {
         document.querySelector('.popup-card').scrollIntoView({ behavior: 'smooth', block: 'center' });
       }, 120);
 
       if (typeof gtag !== 'undefined') {
         gtag('event', 'howto_video_open_inline', {
-          'episode': slug + '_s' + season + 'e' + ep
+          'episode': (slug||'') + '_s' + (season||'') + 'e' + (ep||'')
         });
       }
     }
 
     function closeHowtoInline() {
+      // exit fullscreen if active
+      try {
+        if (document.fullscreenElement || document.webkitFullscreenElement) {
+          if (document.exitFullscreen) document.exitFullscreen().catch(()=>{});
+          else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        }
+      } catch (e) { /* ignore */ }
+
       howtoVideoWrap.innerHTML = ''; // remove iframe to stop playback
       howtoVideoBlock.style.display = 'none';
+      howtoVideoBlock.setAttribute('aria-hidden', 'true');
+
+      // remove fullscreen button if present
+      const fsBtn = document.getElementById('howtoFullscreenBtn');
+      if (fsBtn && fsBtn.parentNode) fsBtn.parentNode.removeChild(fsBtn);
+
       if (typeof gtag !== 'undefined') {
         gtag('event', 'howto_video_close_inline', {
-          'episode': slug + '_s' + season + 'e' + ep
+          'episode': (slug||'') + '_s' + (season||'') + 'e' + (ep||'')
         });
       }
     }
 
     openHowtoInlineBtn.addEventListener('click', openHowtoInline);
     closeHowtoInlineBtn.addEventListener('click', closeHowtoInline);
+
+    // hide video block when user presses Escape (and remove iframe)
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && howtoVideoBlock.style.display === 'block') {
+        closeHowtoInline();
+      }
+    });
+
+    // close video if user taps outside popup-card and video is visible (optional UX)
+    document.addEventListener('click', function(ev) {
+      const card = document.querySelector('.popup-card');
+      if (!card) return;
+      if (howtoVideoBlock.style.display === 'block') {
+        // if click target outside the popup-card, close video
+        if (!card.contains(ev.target)) {
+          closeHowtoInline();
+        }
+      }
+    });
 
   })();
   </script>
