@@ -19,15 +19,8 @@
 
   <!-- Popup styles -->
   <style>
-    body {
-      margin: 0;
-      padding: 0;
-      overflow-x: hidden;
-    }
-
-    #episode-view {
-      min-height: 100vh;
-    }
+    body { margin: 0; padding: 0; overflow-x: hidden; }
+    #episode-view { min-height: 100vh; }
 
     #unlockPopup {
       display: none;
@@ -37,368 +30,119 @@
       height: 100%;
       z-index: 99999;
       padding: 16px;
-      background: rgba(0, 0, 0, 0.04);
+      background: rgba(0,0,0,0.04);
       backdrop-filter: blur(4px) saturate(130%);
       -webkit-backdrop-filter: blur(4px) saturate(130%);
       overflow-y: auto;
     }
 
-    .popup-container {
-      min-height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
+    .popup-container { min-height: 100%; display:flex; align-items:center; justify-content:center; }
     .popup-card {
-      max-width: 460px;
-      width: 100%;
-      border-radius: 24px;
-      padding: 24px 20px 20px;
-      position: relative;
-      overflow: hidden;
-      background:
-        linear-gradient(135deg,
-          rgba(11, 18, 35, 0.82),
-          rgba(11, 18, 35, 0.60));
-      border: 1px solid rgba(255, 255, 255, 0.20);
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
+      max-width: 460px; width:100%; border-radius:24px; padding:24px 20px 20px;
+      position:relative; overflow:hidden;
+      background: linear-gradient(135deg, rgba(11,18,35,0.82), rgba(11,18,35,0.60));
+      border:1px solid rgba(255,255,255,0.20);
+      box-shadow:0 20px 50px rgba(0,0,0,0.55);
       animation: popupIn 0.30s ease-out forwards;
     }
-
     .popup-card::before {
-      content: "";
-      position: absolute;
-      inset: -1px;
-      pointer-events: none;
-      background:
-        radial-gradient(circle at 0% 0%,
-          rgba(0, 208, 240, 0.7),
-          transparent 55%),
-        radial-gradient(circle at 100% 100%,
-          rgba(255, 212, 0, 0.7),
-          transparent 55%);
-      opacity: 0.18;
-      mix-blend-mode: screen;
+      content:""; position:absolute; inset:-1px; pointer-events:none;
+      background: radial-gradient(circle at 0% 0%, rgba(0,208,240,0.7), transparent 55%),
+                  radial-gradient(circle at 100% 100%, rgba(255,212,0,0.7), transparent 55%);
+      opacity:0.18; mix-blend-mode:screen;
     }
+    @keyframes popupIn { from {opacity:0; transform:translateY(14px) scale(0.97);} to {opacity:1; transform:translateY(0) scale(1);} }
 
-    @keyframes popupIn {
-      from {
-        opacity: 0;
-        transform: translateY(14px) scale(0.97);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
-    }
-
-    .popup-header {
-      text-align: center;
-      margin-bottom: 20px;
-      position: relative;
-      z-index: 1;
-    }
-
+    .popup-header { text-align:center; margin-bottom:20px; position:relative; z-index:1; }
     .popup-lock-icon {
-      font-size: 32px;
-      margin-bottom: 10px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 52px;
-      height: 52px;
-      border-radius: 999px;
-      background: radial-gradient(circle at 30% 0%,
-                  rgba(0, 208, 240, 0.95),
-                  rgba(18, 27, 56, 0.6));
-      box-shadow:
-        0 0 20px rgba(0, 208, 240, 0.9),
-        0 10px 24px rgba(0, 0, 0, 0.8);
+      font-size:32px; margin-bottom:10px; display:inline-flex; align-items:center; justify-content:center;
+      width:52px; height:52px; border-radius:999px;
+      background: radial-gradient(circle at 30% 0%, rgba(0,208,240,0.95), rgba(18,27,56,0.6));
+      box-shadow: 0 0 20px rgba(0,208,240,0.9), 0 10px 24px rgba(0,0,0,0.8);
     }
-
-    .popup-header h2 {
-      color: #f4f7ff;
-      font-size: 23px;
-      margin: 6px 0 4px;
-      font-weight: 800;
-      letter-spacing: 0.03em;
-    }
-
-    .popup-header p {
-      color: rgba(225, 235, 255, 0.86);
-      font-size: 14px;
-      margin: 0;
-      font-weight: 500;
-    }
+    .popup-header h2 { color:#f4f7ff; font-size:23px; margin:6px 0 4px; font-weight:800; letter-spacing:0.03em; }
+    .popup-header p { color: rgba(225,235,255,0.86); font-size:14px; margin:0; font-weight:500; }
 
     .sponsor-section {
-      position: relative;
-      z-index: 1;
-      border-radius: 18px;
-      padding: 16px 15px 16px;
-      margin-bottom: 16px;
-      background:
-        linear-gradient(145deg,
-          rgba(255, 255, 255, 0.03),
-          rgba(0, 0, 0, 0.25));
-      border: 1px solid rgba(139, 233, 255, 0.55);
+      position:relative; z-index:1; border-radius:18px; padding:16px 15px 16px; margin-bottom:16px;
+      background: linear-gradient(145deg, rgba(255,255,255,0.03), rgba(0,0,0,0.25));
+      border:1px solid rgba(139,233,255,0.55);
     }
-
     .sponsor-section h3 {
-      color: #8be9ff;
-      font-size: 14px;
-      margin: 0 0 10px;
-      text-align: center;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.10em;
+      color:#8be9ff; font-size:14px; margin:0 0 10px; text-align:center; font-weight:700; text-transform:uppercase; letter-spacing:0.10em;
     }
 
-    .sponsor-brand-container {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      margin-bottom: 10px;
-    }
+    .sponsor-brand-container { display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom:10px; }
+    .sponsor-logo { width:44px; height:44px; border-radius:14px; object-fit:cover; border:2px solid rgba(255,212,0,0.6); box-shadow:0 6px 16px rgba(255,212,0,0.7); }
+    .sponsor-brand { color:#ffd962; font-size:21px; font-weight:900; text-shadow:0 0 16px rgba(255,212,0,0.85), 0 0 32px rgba(255,180,0,0.7); }
 
-    .sponsor-logo {
-      width: 44px;
-      height: 44px;
-      border-radius: 14px;
-      object-fit: cover;
-      border: 2px solid rgba(255, 212, 0, 0.6);
-      box-shadow: 0 6px 16px rgba(255, 212, 0, 0.7);
-    }
-
-    .sponsor-brand {
-      color: #ffd962;
-      font-size: 21px;
-      font-weight: 900;
-      text-shadow:
-        0 0 16px rgba(255, 212, 0, 0.85),
-        0 0 32px rgba(255, 180, 0, 0.7);
-    }
-
-    .unlock-message {
-      color: rgba(235, 244, 255, 0.90);
-      text-align: center;
-      margin: 0 4px 14px;
-      font-size: 13px;
-      line-height: 1.6;
-      font-weight: 500;
-    }
+    .unlock-message { color: rgba(235,244,255,0.90); text-align:center; margin:0 4px 14px; font-size:13px; line-height:1.6; font-weight:500; }
 
     .unlock-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      padding: 14px 22px;
-      width: 100%;
-      border-radius: 999px;
-      border: none;
-      text-decoration: none;
-      cursor: pointer;
-      font-weight: 800;
-      font-size: 14px;
-      letter-spacing: 0.09em;
-      text-transform: uppercase;
-      background: linear-gradient(135deg,
-            #667eea 0%,
-            #764ba2 45%,
-            #f093fb 100%);
-      color: #fff;
-      box-shadow:
-        0 12px 28px rgba(118, 75, 162, 0.7),
-        0 0 26px rgba(240, 147, 251, 0.8);
-      text-shadow: 0 2px 7px rgba(0, 0, 0, 0.45);
-      transition: all 0.3s ease;
+      display:flex; align-items:center; justify-content:center; gap:10px;
+      padding:14px 22px; width:100%; border-radius:999px; border:none; text-decoration:none; cursor:pointer;
+      font-weight:800; font-size:14px; letter-spacing:0.09em; text-transform:uppercase;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 45%, #f093fb 100%);
+      color:#fff; box-shadow:0 12px 28px rgba(118,75,162,0.7), 0 0 26px rgba(240,147,251,0.8);
+      text-shadow:0 2px 7px rgba(0,0,0,0.45); transition:all 0.3s ease;
     }
+    .unlock-btn:hover { transform:translateY(-1.5px); filter:brightness(1.06); box-shadow:0 16px 36px rgba(118,75,162,0.9), 0 0 32px rgba(240,147,251,1); }
+    .unlock-btn:active { transform:translateY(0); }
 
-    .unlock-btn:hover {
-      transform: translateY(-1.5px);
-      filter: brightness(1.06);
-      box-shadow:
-        0 16px 36px rgba(118, 75, 162, 0.9),
-        0 0 32px rgba(240, 147, 251, 1);
-    }
-
-    .unlock-btn:active {
-      transform: translateY(0);
-      box-shadow:
-        0 9px 22px rgba(118, 75, 162, 0.6),
-        0 0 20px rgba(240, 147, 251, 0.75);
-    }
-
-    /* NEW: How-to video button (small, subtle) */
-    .howto-row {
-      display: flex;
-      justify-content: center;
-      margin-top: 10px;
-      gap: 10px;
-    }
-
+    .howto-row { display:flex; justify-content:center; margin-top:10px; gap:10px; }
     .howto-btn {
-      background: none;
-      border: 1px solid rgba(143, 211, 255, 0.18);
-      color: #8fd3ff;
-      padding: 8px 12px;
-      border-radius: 999px;
-      font-weight: 700;
-      font-size: 13px;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-flex;
-      gap: 8px;
-      align-items: center;
-      box-shadow: 0 6px 18px rgba(11, 27, 42, 0.6);
-      transition: all 0.18s ease;
+      background:none; border:1px solid rgba(143,211,255,0.18); color:#8fd3ff; padding:8px 12px; border-radius:999px;
+      font-weight:700; font-size:13px; cursor:pointer; text-decoration:none; display:inline-flex; gap:8px; align-items:center;
+      box-shadow:0 6px 18px rgba(11,27,42,0.6); transition:all 0.18s ease;
     }
+    .howto-btn:hover { transform:translateY(-2px); box-shadow:0 10px 26px rgba(11,27,42,0.65); background:rgba(255,255,255,0.02); }
 
-    .howto-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 26px rgba(11, 27, 42, 0.65);
-      background: rgba(255,255,255,0.02);
-    }
-
-    .contact-section {
-      position: relative;
-      z-index: 1;
-      margin-top: 14px;
-      border-radius: 18px;
-      padding: 14px 13px 14px;
-      background:
-        linear-gradient(145deg,
-          rgba(255, 255, 255, 0.02),
-          rgba(0, 0, 0, 0.28));
-      border: 1px solid rgba(255, 212, 0, 0.55);
-      text-align: center;
-    }
-
-    .contact-section h3 {
-      color: #ffd962;
-      font-size: 16px;
-      margin: 0 0 4px;
-      font-weight: 800;
-    }
-
-    .contact-section p {
-      color: rgba(240, 244, 255, 0.90);
-      font-size: 13px;
-      line-height: 1.55;
-      margin: 0 4px 10px;
-    }
-
+    .contact-section { position:relative; z-index:1; margin-top:14px; border-radius:18px; padding:14px 13px 14px;
+      background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(0,0,0,0.28)); border:1px solid rgba(255,212,0,0.55); text-align:center; }
+    .contact-section h3 { color:#ffd962; font-size:16px; margin:0 0 4px; font-weight:800; }
+    .contact-section p { color: rgba(240,244,255,0.90); font-size:13px; line-height:1.55; margin:0 4px 10px; }
     .contact-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 9px 19px;
-      background: linear-gradient(90deg,
-                  rgba(255, 212, 0, 0.96),
-                  rgba(255, 179, 87, 0.98));
-      color: #151515;
-      font-weight: 800;
-      font-size: 13px;
-      border-radius: 999px;
-      text-decoration: none;
-      box-shadow:
-        0 10px 24px rgba(255, 212, 0, 0.7),
-        0 0 20px rgba(255, 212, 0, 1);
-      transition: transform 0.16s ease,
-                  box-shadow 0.16s ease;
+      display:inline-flex; align-items:center; gap:6px; padding:9px 19px;
+      background: linear-gradient(90deg, rgba(255,212,0,0.96), rgba(255,179,87,0.98));
+      color:#151515; font-weight:800; font-size:13px; border-radius:999px; text-decoration:none;
+      box-shadow:0 10px 24px rgba(255,212,0,0.7), 0 0 20px rgba(255,212,0,1); transition:transform .16s ease, box-shadow .16s ease;
     }
+    .contact-btn:hover { transform:translateY(-1px); }
 
-    .contact-btn:hover {
-      transform: translateY(-1px);
-      box-shadow:
-        0 14px 30px rgba(255, 212, 0, 0.9),
-        0 0 26px rgba(255, 212, 0, 1);
-    }
-
-    /* Video modal styles */
-    #videoModal {
+    /* Inline video block (hidden until opened) */
+    .howto-video-block {
       display: none;
-      position: fixed;
-      inset: 0;
-      z-index: 200000;
-      background: rgba(0,0,0,0.68);
-      backdrop-filter: blur(3px);
-      -webkit-backdrop-filter: blur(3px);
-      align-items: center;
-      justify-content: center;
-      padding: 18px;
-    }
-
-    .video-card {
-      width: 100%;
-      max-width: 820px;
-      border-radius: 14px;
+      margin-top: 12px;
+      border-radius: 12px;
       overflow: hidden;
-      position: relative;
-      background: linear-gradient(180deg, rgba(6,12,20,0.95), rgba(10,16,28,0.95));
-      box-shadow: 0 20px 50px rgba(0,0,0,0.7);
-      border: 1px solid rgba(255,255,255,0.06);
+      background: linear-gradient(180deg, rgba(6,12,20,0.98), rgba(10,16,28,0.98));
+      border:1px solid rgba(255,255,255,0.04);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.6);
     }
-
-    .video-close {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      z-index: 5;
-      background: rgba(255,255,255,0.06);
-      border: none;
-      color: #fff;
-      padding: 8px 10px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 700;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+    .howto-video-header {
+      display:flex; align-items:center; justify-content:space-between; padding:10px 12px; gap:12px;
+      border-bottom:1px solid rgba(255,255,255,0.03);
     }
-
-    .video-embed-wrap {
-      position: relative;
-      width: 100%;
-      height: 0;
-      padding-bottom: 56.25%;
-      background: #000;
+    .howto-video-title { color:#8fd3ff; font-weight:800; font-size:14px; }
+    .howto-video-close {
+      background:none; border:1px solid rgba(255,255,255,0.04); color:#fff; padding:6px 8px; border-radius:8px; cursor:pointer;
     }
+    .howto-video-caption { padding:10px 12px; color:rgba(220,230,255,0.9); font-size:13px; line-height:1.45; }
+    .howto-video-wrap { position:relative; width:100%; height:0; padding-bottom:56.25%; background:#000; }
+    .howto-video-wrap iframe { position:absolute; top:0; left:0; width:100%; height:100%; border:0; }
 
-    .video-embed-wrap iframe {
-      position: absolute;
-      top:0;
-      left:0;
-      width:100%;
-      height:100%;
-      border:0;
-    }
-
-    @media (max-width: 520px) {
-      #unlockPopup {
-        padding: 10px;
-      }
-      .popup-card {
-        padding: 22px 16px 18px;
-        border-radius: 20px;
-      }
-      .popup-header h2 {
-        font-size: 20px;
-      }
-      .sponsor-brand {
-        font-size: 18px;
-      }
-      .video-card {
-        max-width: 92%;
-      }
+    @media (max-width:520px) {
+      #unlockPopup { padding:10px; }
+      .popup-card { padding:22px 16px 18px; border-radius:20px; }
+      .popup-header h2 { font-size:20px; }
+      .sponsor-brand { font-size:18px; }
     }
   </style>
 
   <!-- Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
-  <!-- Episode logic -->
+  <!-- Episode logic (keeps external file if you use it) -->
   <script defer src="episode.js"></script>
 </head>
 <body>
@@ -428,6 +172,7 @@
             Join our sponsor channel to unlock 3 episodes for 24 hours
           </p>
 
+          <!-- Main unlock button (original flow) -->
           <a href="https://t.me/+OKnw3z4Uq28wYzRk"
              target="_blank"
              class="unlock-btn"
@@ -436,13 +181,44 @@
             <span id="btnText">Join Channel & Unlock</span>
           </a>
 
-          <!-- NEW: How-to video button row -->
+          <!-- How-to: inline video toggle -->
           <div class="howto-row">
-            <button class="howto-btn" id="openVideoBtn" type="button">
-              <i class="fas fa-play-circle"></i>
-              How to Unlock? (Watch Video)
+            <button class="howto-btn" id="openHowtoInlineBtn" type="button">
+              <i class="fas fa-play-circle"></i> How to Unlock? (Watch Video)
+            </button>
+            <!-- optional screenshot button (kept minimal so not to confuse) -->
+            <button class="howto-btn" id="openScreensBtn" type="button" title="View quick screenshots">
+              <i class="fas fa-images"></i> Screenshots
             </button>
           </div>
+
+          <!-- Inline video block (appears beneath the buttons) -->
+          <div class="howto-video-block" id="howtoVideoBlock">
+            <div class="howto-video-header">
+              <div class="howto-video-title">Quick: How to Unlock (15s)</div>
+              <button class="howto-video-close" id="closeHowtoInlineBtn">Close</button>
+            </div>
+            <div class="howto-video-caption">Watch this quick guide — then tap <strong>Join Channel & Unlock</strong> below.</div>
+            <div class="howto-video-wrap" id="howtoVideoWrap">
+              <!-- iframe injected dynamically -->
+            </div>
+          </div>
+
+          <!-- Simple screenshots panel (toggleable, optional) -->
+          <div class="howto-video-block" id="howtoScreensBlock" style="display:none;">
+            <div class="howto-video-header">
+              <div class="howto-video-title">Screenshots — Steps</div>
+              <button class="howto-video-close" id="closeScreensBtn">Close</button>
+            </div>
+            <div class="howto-video-caption">1) Tap Join Channel & Unlock → 2) Join the Telegram channel → 3) Return and tap the unlocked button.</div>
+            <div style="padding:10px;">
+              <!-- Replace these images with your real screenshots -->
+              <img src="ss1.png" alt="Step 1" style="width:100%; border-radius:8px; margin-bottom:8px;"/>
+              <img src="ss2.png" alt="Step 2" style="width:100%; border-radius:8px; margin-bottom:8px;"/>
+              <img src="ss3.png" alt="Step 3" style="width:100%; border-radius:8px;"/>
+            </div>
+          </div>
+
         </div>
 
         <div class="contact-section">
@@ -454,16 +230,6 @@
           </a>
         </div>
 
-      </div>
-    </div>
-  </div>
-
-  <!-- Video Modal (hidden by default) -->
-  <div id="videoModal" aria-hidden="true">
-    <div class="video-card" role="dialog" aria-modal="true" aria-label="How to Unlock Video">
-      <button class="video-close" id="closeVideoBtn" aria-label="Close video">✕</button>
-      <div class="video-embed-wrap" id="videoEmbedWrap">
-        <!-- Iframe will be injected dynamically to avoid autoplay before open -->
       </div>
     </div>
   </div>
@@ -480,13 +246,17 @@
     const unlockMessage = document.getElementById('unlockMessage');
     const lockIcon = document.querySelector('.popup-lock-icon');
 
-    // Video modal elements
-    const openVideoBtn = document.getElementById('openVideoBtn');
-    const videoModal = document.getElementById('videoModal');
-    const closeVideoBtn = document.getElementById('closeVideoBtn');
-    const videoEmbedWrap = document.getElementById('videoEmbedWrap');
+    // Inline how-to controls
+    const openHowtoInlineBtn = document.getElementById('openHowtoInlineBtn');
+    const howtoVideoBlock = document.getElementById('howtoVideoBlock');
+    const howtoVideoWrap = document.getElementById('howtoVideoWrap');
+    const closeHowtoInlineBtn = document.getElementById('closeHowtoInlineBtn');
 
-    // Rumble embed URL you provided (kept as-is)
+    const openScreensBtn = document.getElementById('openScreensBtn');
+    const howtoScreensBlock = document.getElementById('howtoScreensBlock');
+    const closeScreensBtn = document.getElementById('closeScreensBtn');
+
+    // Rumble embed URL
     const rumbleEmbedUrl = 'https://rumble.com/embed/v7018ms/?pub=4ni0h4';
 
     // Get episode info from URL
@@ -507,25 +277,21 @@
     function isEpisodeAccessible(episodeNum) {
       for (let i = 0; i < 3; i++) {
         const checkEp = episodeNum - i;
-        if (checkEp < 1) continue; // Skip episode 0 or negative numbers
-        
+        if (checkEp < 1) continue;
+
         const unlockKey = 'unlocked_' + slug + '_s' + season + '_e' + checkEp;
         const unlockTimeKey = unlockKey + '_time';
-        
         const unlockTime = localStorage.getItem(unlockTimeKey);
         if (!unlockTime) continue;
 
         const hoursPassed = (Date.now() - parseInt(unlockTime)) / (1000 * 60 * 60);
-        
         if (hoursPassed < 24 && localStorage.getItem(unlockKey) === 'true') {
-          console.log('Episode ' + episodeNum + ' accessible via episode ' + checkEp + ' unlock');
           return true;
         } else if (hoursPassed >= 24) {
           localStorage.removeItem(unlockKey);
           localStorage.removeItem(unlockTimeKey);
         }
       }
-      
       return false;
     }
 
@@ -534,20 +300,17 @@
       const ep1 = currentEp;
       const ep2 = currentEp + 1;
       const ep3 = currentEp + 2;
-      
+
       unlockMessage.textContent = `📺 Unlock to watch episodes ${ep1}, ${ep2}, and ${ep3} for 24 hours`;
       popupSubtitle.textContent = `Unlock 3 episodes starting from ${ep1}`;
     }
 
-    // Check if current episode is accessible
+    // Show popup if locked
     if (!isEpisodeAccessible(currentEp)) {
       updatePopupMessage();
-      setTimeout(function() {
-        popup.style.display = 'block';
-      }, 500);
+      setTimeout(function() { popup.style.display = 'block'; }, 500);
     } else {
-      console.log('Episode ' + currentEp + ' is accessible');
-       if (typeof gtag !== 'undefined') {
+      if (typeof gtag !== 'undefined') {
         gtag('event', 'episode_watch', {
           'episode': slug + '_s' + season + 'e' + ep,
           'access_type': 'unlocked'
@@ -555,24 +318,18 @@
       }
     }
 
-    // Handle unlock button click
+    // Unlock click logic (keeps your double-click verify flow)
     let isProcessing = false;
-
     unlockBtn.addEventListener('click', function(e) {
       if (isProcessing) {
-        // Second click - save unlock and close popup
         if (btnText.innerHTML.includes('Tap to Watch')) {
           const unlockKey = 'unlocked_' + slug + '_s' + season + '_e' + currentEp;
           const unlockTimeKey = unlockKey + '_time';
-          
+
           localStorage.setItem(unlockKey, 'true');
           localStorage.setItem(unlockTimeKey, Date.now().toString());
-          
-          console.log('Unlocked episode ' + currentEp + ' - grants access to episodes ' + currentEp + '-' + (currentEp + 2));
-          
+
           popup.style.display = 'none';
-          
-          // Track successful unlock
           if (typeof gtag !== 'undefined') {
             gtag('event', 'episode_unlock_complete', {
               'episode': slug + '_s' + season + 'e' + ep,
@@ -583,104 +340,103 @@
         return;
       }
 
-      // First click - start verification process
+      // First click: simulate verify
       isProcessing = true;
-      
       unlockBtn.style.opacity = '0.6';
       unlockBtn.style.pointerEvents = 'none';
       btnText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
       popupTitle.textContent = 'Verifying Membership...';
       lockIcon.textContent = '⏳';
-      
-      // Track unlock attempt
+
       if (typeof gtag !== 'undefined') {
         gtag('event', 'episode_unlock_attempt', {
           'episode': slug + '_s' + season + 'e' + ep
         });
       }
-      
-      // After 15 seconds - show success message
+
       setTimeout(function() {
         unlockBtn.style.opacity = '1';
         unlockBtn.style.pointerEvents = 'auto';
         unlockBtn.style.cursor = 'pointer';
         unlockBtn.style.background = 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)';
-        unlockBtn.style.boxShadow = '0 12px 28px rgba(17, 153, 142, 0.8), 0 0 32px rgba(56, 239, 125, 1)';
-        
+        unlockBtn.style.boxShadow = '0 12px 28px rgba(17,153,142,0.8), 0 0 32px rgba(56,239,125,1)';
+
         const ep1 = currentEp;
         const ep2 = currentEp + 1;
         const ep3 = currentEp + 2;
-        
+
         btnText.innerHTML = '<i class="fas fa-check-circle"></i> Unlocked! Tap to Watch';
         popupTitle.textContent = 'Successfully Unlocked!';
         popupSubtitle.textContent = `Episodes ${ep1}-${ep3} available for 24h`;
         lockIcon.textContent = '✅';
         unlockMessage.textContent = `🎉 Episodes ${ep1}, ${ep2}, and ${ep3} are now free for 24 hours!`;
-        
-        // Track unlock success
+
         if (typeof gtag !== 'undefined') {
           gtag('event', 'episode_unlock_verified', {
             'episode': slug + '_s' + season + 'e' + ep,
             'unlocked_episodes': ep1 + ',' + ep2 + ',' + ep3
           });
         }
-      }, 15000); // 15 seconds verification time
+      }, 15000); // 15s verification
     });
 
-    // ------------------------
-    // Video modal handlers
-    // ------------------------
+    // ---------- Inline how-to handlers ----------
+    function openHowtoInline() {
+      // Close screenshots if open
+      howtoScreensBlock.style.display = 'none';
 
-    function openVideoModal() {
-      // inject iframe only when opening (prevents autoplay before open)
-      videoEmbedWrap.innerHTML = '<iframe class="rumble" src="' + rumbleEmbedUrl + '" allowfullscreen></iframe>';
-      videoModal.style.display = 'flex';
-      videoModal.setAttribute('aria-hidden', 'false');
+      // inject iframe only once (destroyed when closed)
+      if (!howtoVideoWrap.querySelector('iframe')) {
+        howtoVideoWrap.innerHTML = '<iframe class="rumble" src="' + rumbleEmbedUrl + '" allowfullscreen></iframe>';
+      }
+      howtoVideoBlock.style.display = 'block';
+      // scroll the popup card to bottom so the video is visible
+      setTimeout(() => {
+        document.querySelector('.popup-card').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 120);
 
-      // Track video opened
       if (typeof gtag !== 'undefined') {
-        gtag('event', 'howto_video_open', {
+        gtag('event', 'howto_video_open_inline', {
           'episode': slug + '_s' + season + 'e' + ep
         });
       }
     }
 
-    function closeVideoModal() {
-      // remove iframe to stop playback
-      videoEmbedWrap.innerHTML = '';
-      videoModal.style.display = 'none';
-      videoModal.setAttribute('aria-hidden', 'true');
-
-      // Track video closed
+    function closeHowtoInline() {
+      howtoVideoWrap.innerHTML = ''; // remove iframe to stop playback
+      howtoVideoBlock.style.display = 'none';
       if (typeof gtag !== 'undefined') {
-        gtag('event', 'howto_video_close', {
+        gtag('event', 'howto_video_close_inline', {
           'episode': slug + '_s' + season + 'e' + ep
         });
       }
     }
 
-    openVideoBtn.addEventListener('click', function() {
-      openVideoModal();
-    });
+    openHowtoInlineBtn.addEventListener('click', openHowtoInline);
+    closeHowtoInlineBtn.addEventListener('click', closeHowtoInline);
 
-    closeVideoBtn.addEventListener('click', function() {
-      closeVideoModal();
-    });
+    // Screenshots handlers (optional)
+    openScreensBtn.addEventListener('click', function() {
+      // close video if open
+      closeHowtoInline();
+      howtoScreensBlock.style.display = 'block';
+      setTimeout(() => {
+        document.querySelector('.popup-card').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 120);
 
-    // close when clicking outside the video-card
-    videoModal.addEventListener('click', function(e) {
-      if (e.target === videoModal) {
-        closeVideoModal();
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'howto_screens_open', { 'episode': slug + '_s' + season + 'e' + ep });
+      }
+    });
+    closeScreensBtn.addEventListener('click', function() {
+      howtoScreensBlock.style.display = 'none';
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'howto_screens_close', { 'episode': slug + '_s' + season + 'e' + ep });
       }
     });
 
-    // close on Escape
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape' && videoModal.style.display === 'flex') {
-        closeVideoModal();
-      }
-    });
-
+    // Close popup if user navigates away (optional) - not altering existing behavior
+    // (Keep as-is or add a close button if you prefer)
   })();
   </script>
 </body>
