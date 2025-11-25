@@ -200,7 +200,7 @@
 
     .unlock-message {
       color: rgba(235, 244, 255, 0.90);
-      text-align:center;
+      text-align: center;
       margin: 0 4px 14px;
       font-size: 13px;
       line-height: 1.6;
@@ -234,9 +234,7 @@
         0 12px 28px rgba(118, 75, 162, 0.7),
         0 0 26px rgba(240, 147, 251, 0.8);
       text-shadow: 0 2px 7px rgba(0, 0, 0, 0.45);
-      transition: transform 0.18s ease,
-                  box-shadow 0.18s ease,
-                  filter 0.12s ease;
+      transition: all 0.3s ease;
     }
 
     .unlock-btn:hover {
@@ -313,47 +311,6 @@
         0 0 26px rgba(255, 212, 0, 1);
     }
 
-    /* Timer Section */
-    .timer-section {
-      display: none;
-      text-align: center;
-      padding: 32px 12px 20px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .timer-message {
-      color: #00e0ff;
-      font-size: 17px;
-      font-weight: 700;
-      margin-bottom: 14px;
-      text-shadow: 0 3px 15px rgba(0, 208, 240, 0.6);
-    }
-
-    .timer-display {
-      font-size: 56px;
-      font-weight: 900;
-      color: #ff4a4a;
-      text-shadow:
-        0 0 22px rgba(255, 74, 74, 0.95),
-        0 0 46px rgba(255, 74, 74, 0.8);
-      animation: glow 1s ease-in-out infinite alternate;
-      line-height: 1;
-    }
-
-    @keyframes glow {
-      from {
-        text-shadow:
-          0 0 18px rgba(255, 74, 74, 0.9),
-          0 0 34px rgba(255, 74, 74, 0.7);
-      }
-      to {
-        text-shadow:
-          0 0 32px rgba(255, 74, 74, 1),
-          0 0 70px rgba(255, 74, 74, 0.9);
-      }
-    }
-
     @media (max-width: 520px) {
       #unlockPopup {
         padding: 10px;
@@ -367,9 +324,6 @@
       }
       .sponsor-brand {
         font-size: 18px;
-      }
-      .timer-display {
-        font-size: 48px;
       }
     }
   </style>
@@ -389,64 +343,55 @@
     <div class="popup-container">
       <div class="popup-card">
 
-        <!-- Main Popup Content -->
-        <div id="mainContent">
-          <div class="popup-header">
-            <div class="popup-lock-icon">🔒</div>
-            <h2>Unlock Episode</h2>
-            <p>Join our sponsor channel to watch this episode</p>
-          </div>
-
-          <div class="sponsor-section">
-            <h3>Episode Sponsored By</h3>
-
-            <div class="sponsor-brand-container">
-              <img src="sponsor.png" alt="Sponsor Logo" class="sponsor-logo">
-              <div class="sponsor-brand">FX Reall Accadmy</div>
-            </div>
-
-            <p class="unlock-message">
-              Tap the button below, join our sponsor channel, then come back here to unlock this episode.
-            </p>
-
-            <a href="https://t.me/+OKnw3z4Uq28wYzRk"
-               target="_blank"
-               class="unlock-btn"
-               id="unlockBtn">
-              Unlock Episode
-            </a>
-          </div>
-
-          <div class="contact-section">
-            <h3>Become a Sponsor</h3>
-            <p>Advertise your brand here and reach thousands of active viewers every day.</p>
-            <a href="mailto:https://t.me/itz_me_zain1" class="contact-btn">
-              <i class="fas fa-envelope"></i>
-              Contact Us
-            </a>
-          </div>
+        <div class="popup-header">
+          <div class="popup-lock-icon">🔒</div>
+          <h2>Unlock Episode</h2>
+          <p>Join our sponsor channel to watch this episode</p>
         </div>
 
-        <!-- Timer Countdown -->
-        <div id="timerSection" class="timer-section">
-          <div class="timer-message">⏳ Unlocking Episode...</div>
-          <div class="timer-display" id="timerDisplay">10</div>
+        <div class="sponsor-section">
+          <h3>Episode Sponsored By</h3>
+
+          <div class="sponsor-brand-container">
+            <img src="sponsor.png" alt="Sponsor Logo" class="sponsor-logo">
+            <div class="sponsor-brand">FX Reall Accadmy</div>
+          </div>
+
+          <p class="unlock-message">
+            Join our sponsor channel to unlock and watch this episode
+          </p>
+
+          <!-- Unlock Button -->
+          <a href="https://t.me/+OKnw3z4Uq28wYzRk"
+             target="_blank"
+             class="unlock-btn"
+             id="unlockBtn">
+            <i class="fas fa-paper-plane"></i>
+            <span id="btnText">Join Channel & Unlock</span>
+          </a>
+        </div>
+
+        <div class="contact-section">
+          <h3>Become a Sponsor</h3>
+          <p>Advertise your brand here and reach thousands of active viewers every day.</p>
+          <a href="https://t.me/itz_me_zain1" class="contact-btn">
+            <i class="fas fa-envelope"></i>
+            Contact Us
+          </a>
         </div>
 
       </div>
     </div>
   </div>
 
-  <!-- Unlock System with 24-hour expiry + 10s countdown after return -->
+  <!-- NEW Unlock System -->
   <script>
   (function() {
     const popup = document.getElementById('unlockPopup');
-    const mainContent = document.getElementById('mainContent');
-    const timerSection = document.getElementById('timerSection');
-    const timerDisplay = document.getElementById('timerDisplay');
     const unlockBtn = document.getElementById('unlockBtn');
+    const btnText = document.getElementById('btnText');
 
-    // Get episode info
+    // Episode info
     const urlParams = new URLSearchParams(window.location.search);
     const slug = urlParams.get('series');
     const season = urlParams.get('season');
@@ -459,11 +404,8 @@
 
     const unlockKey = 'unlocked_' + slug + '_s' + season + '_e' + ep;
     const unlockTimeKey = unlockKey + '_time';
-    const clickedFlagKey = unlockKey + '_clicked';
 
-    let hasBlurredSinceClick = false;
-
-    // Check if unlocked and not expired (24 hours)
+    // Check if already unlocked (24h expiry)
     function isUnlocked() {
       const unlockTime = localStorage.getItem(unlockTimeKey);
       if (!unlockTime) return false;
@@ -482,74 +424,44 @@
       return localStorage.getItem(unlockKey) === 'true';
     }
 
-    // Start 10-second countdown
-    function startCountdown() {
-      mainContent.style.display = 'none';
-      timerSection.style.display = 'block';
-
-      let timeLeft = 10;
-      timerDisplay.textContent = timeLeft;
-
-      const countdown = setInterval(function() {
-        timeLeft--;
-        timerDisplay.textContent = timeLeft;
-
-        if (timeLeft <= 0) {
-          clearInterval(countdown);
-          unlockEpisode();
-        }
-      }, 1000);
-    }
-
-    // Unlock and hide popup with 24-hour timestamp
-    function unlockEpisode() {
-      const now = new Date().getTime();
-      localStorage.setItem(unlockKey, 'true');
-      localStorage.setItem(unlockTimeKey, now.toString());
-      popup.style.display = 'none';
-    }
-
-    // If already unlocked, don't show popup
+    // Show popup if not unlocked
     if (!isUnlocked()) {
       setTimeout(function() {
         popup.style.display = 'block';
       }, 500);
     }
 
-    // If user is coming back via back navigation or reload after clicking
-    if (!isUnlocked() && localStorage.getItem(clickedFlagKey) === 'true') {
-      // Immediately start countdown on return page load
-      startCountdown();
-      localStorage.removeItem(clickedFlagKey);
-    }
-
     // Handle unlock button click
-    if (unlockBtn) {
-      unlockBtn.addEventListener('click', function() {
-        // Mark that user clicked the link
-        localStorage.setItem(clickedFlagKey, 'true');
-        hasBlurredSinceClick = false;
-      });
-    }
-
-    // Track that user actually left the page after clicking
-    window.addEventListener('blur', function() {
-      if (localStorage.getItem(clickedFlagKey) === 'true') {
-        hasBlurredSinceClick = true;
-      }
-    });
-
-    // When user comes back to the page, start countdown ONLY if they left
-    window.addEventListener('focus', function() {
-      if (
-        !isUnlocked() &&
-        localStorage.getItem(clickedFlagKey) === 'true' &&
-        hasBlurredSinceClick
-      ) {
-        hasBlurredSinceClick = false;
-        localStorage.removeItem(clickedFlagKey);
-        startCountdown();
-      }
+    unlockBtn.addEventListener('click', function(e) {
+      // Don't prevent default - let Telegram link open
+      
+      // Step 1: Button turns light with "Checking..."
+      unlockBtn.style.opacity = '0.6';
+      unlockBtn.style.pointerEvents = 'none';
+      btnText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
+      
+      // Step 2: After 8 seconds, show green "Episode Unlocked"
+      setTimeout(function() {
+        unlockBtn.style.opacity = '1';
+        unlockBtn.style.background = 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)';
+        unlockBtn.style.boxShadow = '0 12px 28px rgba(17, 153, 142, 0.8), 0 0 32px rgba(56, 239, 125, 1)';
+        btnText.innerHTML = '<i class="fas fa-check-circle"></i> Episode Unlocked!';
+        
+        // Track unlock event in Google Analytics
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'episode_unlock', {
+            'episode': slug + '_s' + season + 'e' + ep,
+            'method': 'channel_join'
+          });
+        }
+        
+        // Step 3: After 3 more seconds, close popup
+        setTimeout(function() {
+          localStorage.setItem(unlockKey, 'true');
+          localStorage.setItem(unlockTimeKey, new Date().getTime().toString());
+          popup.style.display = 'none';
+        }, 3000);
+      }, 8000); // Change to 5000 for 5 seconds or 10000 for 10 seconds
     });
   })();
   </script>
