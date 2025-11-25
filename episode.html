@@ -320,8 +320,8 @@
       <div class="popup-card">
 
         <div class="popup-header">
-          <div class="popup-lock-icon">⏳</div>
-          <h2 id="popupTitle">Unlocking Episode...</h2>
+          <div class="popup-lock-icon">🔒</div>
+          <h2 id="popupTitle">Unlock Episode</h2>
           <p id="popupSubtitle">Episode <span id="episodeNumber">1</span></p>
         </div>
 
@@ -334,7 +334,7 @@
           </div>
 
           <p class="unlock-message" id="unlockMessage">
-            Join our sponsor channel to unlock and watch this episode
+            Join our sponsor channel to unlock 3 episodes for 24 hours
           </p>
 
           <a href="https://t.me/+OKnw3z4Uq28wYzRk"
@@ -359,7 +359,7 @@
     </div>
   </div>
 
-  <!-- Unlock System: Every 5th Episode Requires Unlock -->
+  <!-- Unlock System: Click Any Episode to Unlock 3 Episodes for 24 Hours -->
   <script>
   (function() {
     const popup = document.getElementById('unlockPopup');
@@ -371,7 +371,7 @@
     const unlockMessage = document.getElementById('unlockMessage');
     const lockIcon = document.querySelector('.popup-lock-icon');
 
-    // Get episode info
+    // Get episode info from URL
     const urlParams = new URLSearchParams(window.location.search);
     const slug = urlParams.get('series');
     const season = urlParams.get('season');
@@ -382,70 +382,63 @@
       return;
     }
 
-    // Update episode number in UI
     episodeNumber.textContent = ep;
+    const currentEp = parseInt(ep);
 
-    const unlockKey = 'unlocked_' + slug + '_s' + season + '_e' + ep;
-    const unlockTimeKey = unlockKey + '_time';
+    // Check if current episode is accessible via any unlock within 24 hours
+    function isEpisodeAccessible(episodeNum) {
+      // Check if this episode or one of the 2 previous episodes were unlocked
+      for (let i = 0; i < 3; i++) {
+        const checkEp = episodeNum - i;
+        if (checkEp < 1) continue; // Skip episode 0 or negative numbers
+        
+        const unlockKey = 'unlocked_' + slug + '_s' + season + '_e' + checkEp;
+        const unlockTimeKey = unlockKey + '_time';
+        
+        const unlockTime = localStorage.getItem(unlockTimeKey);
+        if (!unlockTime) continue;
 
-    // Check if episode requires unlock (episodes 1, 5, 10, 15, 20, etc.)
-    function requiresUnlock(episodeNum) {
-      const num = parseInt(episodeNum);
-      
-      // Episode 1 always requires unlock
-      if (num === 1) return true;
-      
-      // Every 5th episode requires unlock (5, 10, 15, 20...)
-      return num % 5 === 0;
-    }
-
-    // Check if THIS episode is already unlocked (24h expiry)
-    function isEpisodeUnlocked() {
-      const unlockTime = localStorage.getItem(unlockTimeKey);
-      if (!unlockTime) return false;
-
-      const hoursPassed = (Date.now() - parseInt(unlockTime)) / (1000 * 60 * 60);
-
-      if (hoursPassed >= 24) {
-        localStorage.removeItem(unlockKey);
-        localStorage.removeItem(unlockTimeKey);
-        return false;
+        // Check if unlock is still valid (within 24 hours)
+        const hoursPassed = (Date.now() - parseInt(unlockTime)) / (1000 * 60 * 60);
+        
+        if (hoursPassed < 24 && localStorage.getItem(unlockKey) === 'true') {
+          // Found a valid unlock that grants access to this episode
+          console.log('Episode ' + episodeNum + ' accessible via episode ' + checkEp + ' unlock');
+          return true;
+        } else if (hoursPassed >= 24) {
+          // Clean up expired unlock
+          localStorage.removeItem(unlockKey);
+          localStorage.removeItem(unlockTimeKey);
+        }
       }
-
-      return localStorage.getItem(unlockKey) === 'true';
+      
+      return false;
     }
 
-    // Update message based on episode number
+    // Update popup message based on current episode
     function updatePopupMessage() {
-      const epNum = parseInt(ep);
+      const ep1 = currentEp;
+      const ep2 = currentEp + 1;
+      const ep3 = currentEp + 2;
       
-      if (epNum === 1) {
-        unlockMessage.textContent = '🎬 Welcome! Join our sponsor to start watching this series';
-      } else if (epNum % 5 === 0) {
-        const nextFree = epNum + 1;
-        const freeUntil = epNum + 4;
-        unlockMessage.textContent = `📺 Unlock episode ${epNum} to watch free until episode ${freeUntil}`;
-      } else {
-        unlockMessage.textContent = 'Join our sponsor channel to unlock this episode';
-      }
+      unlockMessage.textContent = `📺 Unlock to watch episodes ${ep1}, ${ep2}, and ${ep3} for 24 hours`;
+      popupSubtitle.textContent = `Unlock 3 episodes starting from ${ep1}`;
     }
 
-    // Check if we should show popup
-    if (!isEpisodeUnlocked() && requiresUnlock(ep)) {
-      // This episode requires unlock
+    // Check if current episode is accessible
+    if (!isEpisodeAccessible(currentEp)) {
+      // Episode is locked - show popup after delay
       updatePopupMessage();
       setTimeout(function() {
         popup.style.display = 'block';
       }, 500);
-    } else if (!isEpisodeUnlocked()) {
-      // Free episode (2-4, 6-9, 11-14, etc.) - auto unlock
-      localStorage.setItem(unlockKey, 'true');
-      localStorage.setItem(unlockTimeKey, Date.now().toString());
-      
-      // Track free episode view
+    } else {
+      // Episode is accessible - track view
+      console.log('Episode ' + currentEp + ' is accessible');
       if (typeof gtag !== 'undefined') {
-        gtag('event', 'free_episode_watch', {
-          'episode': slug + '_s' + season + 'e' + ep
+        gtag('event', 'episode_watch', {
+          'episode': slug + '_s' + season + 'e' + ep,
+          'access_type': 'unlocked'
         });
       }
     }
@@ -455,24 +448,30 @@
 
     unlockBtn.addEventListener('click', function(e) {
       if (isProcessing) {
-        // Second click - close popup
+        // Second click - save unlock and close popup
         if (btnText.innerHTML.includes('Tap to Watch')) {
+          const unlockKey = 'unlocked_' + slug + '_s' + season + '_e' + currentEp;
+          const unlockTimeKey = unlockKey + '_time';
+          
           localStorage.setItem(unlockKey, 'true');
           localStorage.setItem(unlockTimeKey, Date.now().toString());
+          
+          console.log('Unlocked episode ' + currentEp + ' - grants access to episodes ' + currentEp + '-' + (currentEp + 2));
+          
           popup.style.display = 'none';
           
-          // Track unlock success
+          // Track successful unlock
           if (typeof gtag !== 'undefined') {
-            gtag('event', 'episode_watch_start', {
+            gtag('event', 'episode_unlock_complete', {
               'episode': slug + '_s' + season + 'e' + ep,
-              'episode_type': requiresUnlock(ep) ? 'sponsored' : 'free'
+              'unlocks_count': 3
             });
           }
         }
         return;
       }
 
-      // First click - start checking
+      // First click - start verification process
       isProcessing = true;
       
       unlockBtn.style.opacity = '0.6';
@@ -484,36 +483,38 @@
       // Track unlock attempt
       if (typeof gtag !== 'undefined') {
         gtag('event', 'episode_unlock_attempt', {
-          'episode': slug + '_s' + season + 'e' + ep,
-          'method': 'channel_join'
+          'episode': slug + '_s' + season + 'e' + ep
         });
       }
       
-      // After 20 seconds - show success
+      // After 15 seconds - show success message
       setTimeout(function() {
         unlockBtn.style.opacity = '1';
         unlockBtn.style.pointerEvents = 'auto';
         unlockBtn.style.cursor = 'pointer';
         unlockBtn.style.background = 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)';
         unlockBtn.style.boxShadow = '0 12px 28px rgba(17, 153, 142, 0.8), 0 0 32px rgba(56, 239, 125, 1)';
-        btnText.innerHTML = '<i class="fas fa-check-circle"></i> Episode Unlocked! Tap to Watch';
+        
+        const ep1 = currentEp;
+        const ep2 = currentEp + 1;
+        const ep3 = currentEp + 2;
+        
+        btnText.innerHTML = '<i class="fas fa-check-circle"></i> Unlocked! Tap to Watch';
         popupTitle.textContent = 'Successfully Unlocked!';
-        popupSubtitle.textContent = 'Ready to watch Episode ' + ep;
+        popupSubtitle.textContent = `Episodes ${ep1}-${ep3} available for 24h`;
         lockIcon.textContent = '✅';
+        unlockMessage.textContent = `🎉 Episodes ${ep1}, ${ep2}, and ${ep3} are now free for 24 hours!`;
         
-        // Show next unlock info
-        const nextUnlock = Math.ceil(parseInt(ep) / 5) * 5 + 5;
-        unlockMessage.textContent = `🎉 Enjoy! Next unlock required at episode ${nextUnlock}`;
-        
-        // Track successful unlock
+        // Track unlock success
         if (typeof gtag !== 'undefined') {
-          gtag('event', 'episode_unlock_success', {
-            'episode': slug + '_s' + season + 'e' + ep
+          gtag('event', 'episode_unlock_verified', {
+            'episode': slug + '_s' + season + 'e' + ep,
+            'unlocked_episodes': ep1 + ',' + ep2 + ',' + ep3
           });
         }
-      }, 20000); // 20 seconds
+      }, 15000); // 15 seconds verification time
     });
   })();
   </script>
 </body>
-</html>
+</html> 
