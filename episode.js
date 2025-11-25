@@ -82,7 +82,7 @@ Promise.all([
 
   <!-- Sponsor Title -->
   <div style="font-size:1.12em;color:#ffd700;margin-top:5px;">
-    Episode Sponsored by <span style="color:#fff;font-weight:800;">SmTv Forex Signals</span>
+    Episode Sponsored by <span style="color:#fff;font-weight:800;">FX Reall Accadmy</span>
   </div>
 
   <!-- Sponsor Description -->
@@ -96,7 +96,7 @@ Promise.all([
   </div>
 
   <!-- Start Earning Button -->
-  <a href="https://whatsapp.com/channel/0029Va9zAvvAYlUNRuzWqh0k"
+  <a href="https://t.me/+OKnw3z4Uq28wYzRk"
      target="_blank"
      style="
        display:inline-block;
