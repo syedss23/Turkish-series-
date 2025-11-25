@@ -181,41 +181,22 @@
             <span id="btnText">Join Channel & Unlock</span>
           </a>
 
-          <!-- How-to: inline video toggle -->
+          <!-- How-to: inline video toggle (screenshots removed) -->
           <div class="howto-row">
             <button class="howto-btn" id="openHowtoInlineBtn" type="button">
               <i class="fas fa-play-circle"></i> How to Unlock? (Watch Video)
-            </button>
-            <!-- optional screenshot button (kept minimal so not to confuse) -->
-            <button class="howto-btn" id="openScreensBtn" type="button" title="View quick screenshots">
-              <i class="fas fa-images"></i> Screenshots
             </button>
           </div>
 
           <!-- Inline video block (appears beneath the buttons) -->
           <div class="howto-video-block" id="howtoVideoBlock">
             <div class="howto-video-header">
-              <div class="howto-video-title">Quick: How to Unlock (15s)</div>
+              <div class="howto-video-title">Process of how to Unlock</div>
               <button class="howto-video-close" id="closeHowtoInlineBtn">Close</button>
             </div>
-            <div class="howto-video-caption">Watch this quick guide — then tap <strong>Join Channel & Unlock</strong> below.</div>
+            <div class="howto-video-caption">Ya Video dekho — Unlock kaisa karna — then tap <strong>Join Channel & Unlock</strong> below.</div>
             <div class="howto-video-wrap" id="howtoVideoWrap">
               <!-- iframe injected dynamically -->
-            </div>
-          </div>
-
-          <!-- Simple screenshots panel (toggleable, optional) -->
-          <div class="howto-video-block" id="howtoScreensBlock" style="display:none;">
-            <div class="howto-video-header">
-              <div class="howto-video-title">Screenshots — Steps</div>
-              <button class="howto-video-close" id="closeScreensBtn">Close</button>
-            </div>
-            <div class="howto-video-caption">1) Tap Join Channel & Unlock → 2) Join the Telegram channel → 3) Return and tap the unlocked button.</div>
-            <div style="padding:10px;">
-              <!-- Replace these images with your real screenshots -->
-              <img src="ss1.png" alt="Step 1" style="width:100%; border-radius:8px; margin-bottom:8px;"/>
-              <img src="ss2.png" alt="Step 2" style="width:100%; border-radius:8px; margin-bottom:8px;"/>
-              <img src="ss3.png" alt="Step 3" style="width:100%; border-radius:8px;"/>
             </div>
           </div>
 
@@ -251,10 +232,6 @@
     const howtoVideoBlock = document.getElementById('howtoVideoBlock');
     const howtoVideoWrap = document.getElementById('howtoVideoWrap');
     const closeHowtoInlineBtn = document.getElementById('closeHowtoInlineBtn');
-
-    const openScreensBtn = document.getElementById('openScreensBtn');
-    const howtoScreensBlock = document.getElementById('howtoScreensBlock');
-    const closeScreensBtn = document.getElementById('closeScreensBtn');
 
     // Rumble embed URL
     const rumbleEmbedUrl = 'https://rumble.com/embed/v7018ms/?pub=4ni0h4';
@@ -382,9 +359,6 @@
 
     // ---------- Inline how-to handlers ----------
     function openHowtoInline() {
-      // Close screenshots if open
-      howtoScreensBlock.style.display = 'none';
-
       // inject iframe only once (destroyed when closed)
       if (!howtoVideoWrap.querySelector('iframe')) {
         howtoVideoWrap.innerHTML = '<iframe class="rumble" src="' + rumbleEmbedUrl + '" allowfullscreen></iframe>';
@@ -415,28 +389,6 @@
     openHowtoInlineBtn.addEventListener('click', openHowtoInline);
     closeHowtoInlineBtn.addEventListener('click', closeHowtoInline);
 
-    // Screenshots handlers (optional)
-    openScreensBtn.addEventListener('click', function() {
-      // close video if open
-      closeHowtoInline();
-      howtoScreensBlock.style.display = 'block';
-      setTimeout(() => {
-        document.querySelector('.popup-card').scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 120);
-
-      if (typeof gtag !== 'undefined') {
-        gtag('event', 'howto_screens_open', { 'episode': slug + '_s' + season + 'e' + ep });
-      }
-    });
-    closeScreensBtn.addEventListener('click', function() {
-      howtoScreensBlock.style.display = 'none';
-      if (typeof gtag !== 'undefined') {
-        gtag('event', 'howto_screens_close', { 'episode': slug + '_s' + season + 'e' + ep });
-      }
-    });
-
-    // Close popup if user navigates away (optional) - not altering existing behavior
-    // (Keep as-is or add a close button if you prefer)
   })();
   </script>
 </body>
