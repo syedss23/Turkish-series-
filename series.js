@@ -1,4 +1,4 @@
-// series.js — FIXED (corrected regex error causing blank page)
+// series.js - COMPLETE WORKING VERSION
 (function () {
   'use strict';
 
@@ -7,7 +7,6 @@
   const lang = (qs.get('lang') || '').toLowerCase();
   const seasonQuery = qs.get('season') || '1';
 
-  // Source tracking for Barbarossa S1
   let currentSource = 1;
 
   const HOWTO_PROCESS_1 = `<iframe class="rumble" width="640" height="360" src="https://rumble.com/embed/v703dzq/?pub=4ni0h4" frameborder="0" allowfullscreen></iframe>`;
@@ -25,19 +24,22 @@
       t.style.cssText = 'position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#122231;color:#9fe6ff;padding:10px 14px;border-radius:9px;border:1px solid #2d4b6a;font-weight:700;z-index:99999;font-family:Montserrat,sans-serif;';
       document.body.appendChild(t);
       setTimeout(() => t.remove(), 2600);
-    } catch (e) { console.warn('toast error', e); }
+    } catch (e) {}
   }
 
-  // injected styles
   const injectedStyles = `
     .pro-episodes-row-pro{ -webkit-overflow-scrolling: touch; }
     .pro-episodes-row-wrap-pro { transition: min-height .18s ease; }
-    .pro-episodes-row-wrap-pro.is-loading { opacity: .72; pointer-events: none; filter: blur(.6px) contrast(.98); }
+    .pro-episodes-row-wrap-pro.is-loading { opacity: .72; pointer-events: none; }
     .pro-episode-card-pro { transition: transform .28s ease, opacity .28s ease; }
     .reveal-item { opacity: 0; transform: translateY(10px); }
     .reveal-item.show { opacity: 1; transform: translateY(0); }
   `;
-  try { const s = document.createElement('style'); s.textContent = injectedStyles; document.head.appendChild(s); } catch(e){}
+  try { 
+    const s = document.createElement('style'); 
+    s.textContent = injectedStyles; 
+    document.head.appendChild(s); 
+  } catch(e){}
 
   function escapeHtml(s) {
     if (s === null || s === undefined) return '';
@@ -46,7 +48,6 @@
     });
   }
 
-  // Try several candidate episode JSON paths
   async function fetchEpisodesWithCandidates(season) {
     const candidates = [
       `episode-data/${slug}-${lang}-sub-s${season}.json`,
@@ -54,16 +55,14 @@
       `episode-data/${slug}-s${season}-${lang}.json`,
       `episode-data/${slug}-s${season}-en.json`,
       `episode-data/${slug}-s${season}-hi.json`,
-      `episode-data/${slug}-s${season}-ur.json`,
-      `episode-data/${slug}-s${season}-sub.json`,
-      `episode-data/${slug}-s${season}-en-sub.json`
+      `episode-data/${slug}-s${season}-ur.json`
     ].filter(Boolean);
 
     const tried = [];
 
     for (const cand of candidates) {
       try {
-        const path = cand.startsWith('/') ? cand : '/' + cand.replace(/^/+/, '');
+        const path = cand.startsWith('/') ? cand : '/' + cand;
         const url = bust(path);
         const resp = await fetch(url, { cache: 'no-cache' });
         const rec = { path: cand, ok: resp.ok, status: resp.status, err: null };
@@ -85,19 +84,18 @@
     throw { tried };
   }
 
-  // Special fetch for Barbarossa with source selector
   async function fetchBarbarossaEpisodes(season, source) {
     const fileName = source === 2 
       ? `episode-data/${slug}-s${season}-source2.json`
       : `episode-data/${slug}-s${season}.json`;
     
     try {
-      const path = fileName.startsWith('/') ? fileName : '/' + fileName.replace(/^/+/, '');
+      const path = fileName.startsWith('/') ? fileName : '/' + fileName;
       const url = bust(path);
       const resp = await fetch(url, { cache: 'no-cache' });
       
       if (!resp.ok) {
-        throw new Error(`HTTP ${resp.status} for ${fileName}`);
+        throw new Error('HTTP ' + resp.status);
       }
       
       const text = await resp.text();
@@ -121,7 +119,6 @@
         return;
       }
 
-      // load series.json
       let seriesList;
       try {
         const r = await fetch('/series.json', { cache: 'no-cache' });
@@ -169,14 +166,11 @@
           </div>
         </section>
 
-        <nav class="pro-seasons-tabs-pro" id="pro-seasons-tabs" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px;"></nav>
-
+        <nav class="pro-seasons-tabs-pro" id="pro-seasons-tabs"></nav>
         <div id="source-selector-container" style="display:none;"></div>
-
-        <section class="pro-episodes-row-wrap-pro" id="pro-episodes-row-wrap" style="margin-top:14px;"></section>
+        <section class="pro-episodes-row-wrap-pro" id="pro-episodes-row-wrap"></section>
       `;
 
-      // build seasons
       let seasons = [];
       if (typeof meta.seasons === 'number') {
         for (let i = 1; i <= meta.seasons; i++) seasons.push(String(i));
@@ -191,22 +185,17 @@
         btn.addEventListener('click', () => {
           tabsEl.querySelectorAll('.pro-season-tab-pro').forEach(b => b.classList.remove('active'));
           btn.classList.add('active');
-
           const newSeason = btn.dataset.season;
           updateSourceSelector(newSeason);
-          
-          loadSeason(newSeason).catch(err => {
-            console.error('loadSeason error', err);
-          });
+          loadSeason(newSeason).catch(err => console.error('loadSeason error', err));
         });
       });
 
-      // Initialize source selector for Barbarossa S1
       function updateSourceSelector(season) {
         const container = document.getElementById('source-selector-container');
         if (!container) return;
 
-        const showSelector = (slug === 'barbarossa' || slug === 'barbarossa-brothers') && season === '1';
+        const showSelector = slug === 'barbarossa' && season === '1';
         
         if (showSelector) {
           container.style.display = 'block';
@@ -220,11 +209,9 @@
           container.querySelectorAll('.source-btn').forEach(btn => {
             btn.addEventListener('click', function() {
               currentSource = parseInt(this.dataset.source);
-              
               container.querySelectorAll('.source-btn').forEach(b => b.classList.remove('active'));
               this.classList.add('active');
-              
-              toast(`Loading Source ${currentSource}...`);
+              toast('Loading Source ' + currentSource + '...');
               loadSeason(season).catch(err => {
                 console.error('Source switch error', err);
                 toast('Failed to load source');
@@ -239,7 +226,6 @@
       }
 
       updateSourceSelector(seasonQuery);
-
       await loadSeason(seasonQuery);
       try { window.scrollTo({ top: 0, behavior: 'auto' }); } catch(e){ window.scrollTo(0,0); }
 
@@ -255,19 +241,13 @@
         wrap.innerHTML = `<div style="color:#ddd;padding:12px 0;">Loading episodes...</div>`;
 
         try {
-          const isBarbarossaSpecial = (slug === 'barbarossa' || slug === 'barbarossa-brothers') && season === '1';
+          const isBarbarossaSpecial = slug === 'barbarossa' && season === '1';
           
-          const { episodes, tried } = await (async () => {
-            try {
-              if (isBarbarossaSpecial) {
-                return await fetchBarbarossaEpisodes(season, currentSource);
-              } else {
-                return await fetchEpisodesWithCandidates(season);
-              }
-            } catch (err) {
-              throw err;
-            }
-          })();
+          const result = isBarbarossaSpecial 
+            ? await fetchBarbarossaEpisodes(season, currentSource)
+            : await fetchEpisodesWithCandidates(season);
+
+          const episodes = result.episodes;
 
           if (!Array.isArray(episodes) || episodes.length === 0) {
             wrap.innerHTML = `<div style="color:#fff;padding:28px 0 0 0;">No episodes for this season.</div>`;
@@ -325,10 +305,10 @@
             const lastTried = err.tried[err.tried.length - 1];
             if (lastTried.err && lastTried.err.includes('json-parse')) {
               errorMsg = 'JSON file has syntax error';
-              details = `Check file: ${lastTried.path}`;
+              details = 'Check file: ' + lastTried.path;
             } else if (!lastTried.ok) {
               errorMsg = 'Episode file not found';
-              details = `Looking for: ${lastTried.path}`;
+              details = 'Looking for: ' + lastTried.path;
             }
           }
           
