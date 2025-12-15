@@ -88,6 +88,47 @@
       box-shadow: 0 18px 40px rgba(0,160,210,0.14);
     }
 
+    /* Source Selector Buttons - NEW FEATURE for Barbarossa */
+    .source-selector {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin: 16px 0;
+      flex-wrap: wrap;
+    }
+    
+    .source-btn {
+      background: #1a4d5e;
+      color: white;
+      border: none;
+      padding: 10px 24px;
+      margin: 0;
+      border-radius: 999px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(26, 77, 94, 0.3);
+      outline: none;
+    }
+    
+    .source-btn.active {
+      background: linear-gradient(90deg, #00bcd4, #00a9c6);
+      color: #fff;
+      transform: scale(1.08);
+      box-shadow: 0 6px 20px rgba(0, 188, 212, 0.4);
+    }
+    
+    .source-btn:hover:not(.active) {
+      background: #2a6d7e;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(26, 77, 94, 0.5);
+    }
+    
+    .source-btn:active {
+      transform: scale(0.98);
+    }
+
     /* Episodes container */
     .pro-episodes-row-wrap-pro { margin-top:16px; }
 
