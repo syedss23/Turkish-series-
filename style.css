@@ -626,5 +626,25 @@ button:hover{background:#272838}
     font-size: 1.4rem;
     margin-bottom: 3px;
 }
+.source-btn {
+  background: #1a4d5e;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin: 0 5px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.source-btn.active {
+  background: #00bcd4;
+  transform: scale(1.05);
+}
+
+.source-btn:hover {
+  opacity: 0.9;
+}
 
 /* End of file */
