@@ -1,4 +1,4 @@
-// series.js — ready to replace (prevents auto-scrolling; opens series at top)
+// series.js — ready to replace (with Barbarossa Source Selector feature)
 (function () {
   'use strict';
 
@@ -7,11 +7,25 @@
   const lang = (qs.get('lang') || '').toLowerCase();
   const seasonQuery = qs.get('season') || '1';
 
+  // Source tracking for Barbarossa S1
+  let currentSource = 1;
+  const isBarbarossaS1 = (slug === 'barbarossa' || slug === 'barbarossa-brothers') && seasonQuery === '1';
+
   const HOWTO_PROCESS_1 = `<iframe class="rumble" width="640" height="360" src="https://rumble.com/embed/v6yg466/?pub=4ni0h4" frameborder="0" allowfullscreen></iframe>`;
   const HOWTO_PROCESS_2 = `<iframe class="rumble" width="640" height="360" src="https://rumble.com/embed/v6yg45g/?pub=4ni0h4" frameborder="0" allowfullscreen></iframe>`;
 
   function jsonFor(season) {
     if (!slug) return null;
+    
+    // Special handling for Barbarossa S1 with source selector
+    if ((slug === 'barbarossa' || slug === 'barbarossa-brothers') && season === '1') {
+      if (currentSource === 2) {
+        return `episode-data/${slug}-s${season}-source2.json`;
+      }
+      return `episode-data/${slug}-s${season}.json`;
+    }
+    
+    // Regular logic for other series
     if (lang === 'dub') return `episode-data/${slug}-s${season}.json`;
     if (lang && ['en', 'hi', 'ur'].includes(lang)) return `episode-data/${slug}-s${season}-${lang}.json`;
     return `episode-data/${slug}-s${season}.json`;
@@ -48,30 +62,29 @@
 
   function escapeHtml(s) {
     if (s === null || s === undefined) return '';
-    return String(s).replace(/[&<>"'`=\/]/g, function (c) {
+    return String(s).replace(/[&<>"'`=/]/g, function (c) {
       return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','/':'&#x2F;','`':'&#x60;','=':'&#x3D;' }[c];
     });
   }
 
   // Try several candidate episode JSON paths and return episodes + diagnostics
   async function fetchEpisodesWithCandidates(season) {
-  const candidates = [
-    `episode-data/${slug}-${lang}-sub-s${season}.json`,  // ADD THIS FIRST!
-    `episode-data/${slug}-s${season}.json`,
-    `episode-data/${slug}-s${season}-${lang}.json`,
-    `episode-data/${slug}-s${season}-en.json`,
-    `episode-data/${slug}-s${season}-hi.json`,
-    `episode-data/${slug}-s${season}-ur.json`,
-    `episode-data/${slug}-s${season}-sub.json`,
-    `episode-data/${slug}-s${season}-en-sub.json`
-    // REMOVE the last 2 lines with hardcoded "s1"
-  ].filter(Boolean);
+    const candidates = [
+      `episode-data/${slug}-${lang}-sub-s${season}.json`,
+      `episode-data/${slug}-s${season}.json`,
+      `episode-data/${slug}-s${season}-${lang}.json`,
+      `episode-data/${slug}-s${season}-en.json`,
+      `episode-data/${slug}-s${season}-hi.json`,
+      `episode-data/${slug}-s${season}-ur.json`,
+      `episode-data/${slug}-s${season}-sub.json`,
+      `episode-data/${slug}-s${season}-en-sub.json`
+    ].filter(Boolean);
 
     const tried = [];
 
     for (const cand of candidates) {
       try {
-        const path = cand.startsWith('/') ? cand : '/' + cand.replace(/^\/+/, '');
+        const path = cand.startsWith('/') ? cand : '/' + cand.replace(/^/+/, '');
         const url = bust(path);
         const resp = await fetch(url, { cache: 'no-cache' });
         const rec = { path: cand, ok: resp.ok, status: resp.status, err: null };
@@ -91,6 +104,29 @@
     }
 
     throw { tried };
+  }
+
+  // Special fetch for Barbarossa with source selector
+  async function fetchBarbarossaEpisodes(season, source) {
+    const fileName = source === 2 
+      ? `episode-data/${slug}-s${season}-source2.json`
+      : `episode-data/${slug}-s${season}.json`;
+    
+    try {
+      const path = fileName.startsWith('/') ? fileName : '/' + fileName.replace(/^/+/, '');
+      const url = bust(path);
+      const resp = await fetch(url, { cache: 'no-cache' });
+      
+      if (!resp.ok) {
+        throw new Error(`HTTP ${resp.status} for ${fileName}`);
+      }
+      
+      const text = await resp.text();
+      const parsed = JSON.parse(text);
+      return { episodes: parsed, tried: [{ path: fileName, ok: true, status: resp.status }] };
+    } catch (err) {
+      throw { tried: [{ path: fileName, ok: false, err: String(err) }] };
+    }
   }
 
   (async function init() {
@@ -158,6 +194,8 @@
 
         <nav class="pro-seasons-tabs-pro" id="pro-seasons-tabs" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px;"></nav>
 
+        <div id="source-selector-container" style="display:none;"></div>
+
         <section class="pro-episodes-row-wrap-pro" id="pro-episodes-row-wrap" style="margin-top:14px;"></section>
       `;
 
@@ -171,18 +209,65 @@
 
       const tabsEl = document.getElementById('pro-seasons-tabs');
       tabsEl.innerHTML = seasons.map(s => `<button data-season="${s}" class="pro-season-tab-pro${s === seasonQuery ? ' active' : ''}">Season ${s}</button>`).join('');
+      
       tabsEl.querySelectorAll('.pro-season-tab-pro').forEach(btn => {
         btn.addEventListener('click', () => {
           tabsEl.querySelectorAll('.pro-season-tab-pro').forEach(b => b.classList.remove('active'));
           btn.classList.add('active');
 
-          // call loadSeason but DO NOT force-scroll to top anymore.
-          // we preserve the user's current viewport position.
-          loadSeason(btn.dataset.season).catch(err => {
+          const newSeason = btn.dataset.season;
+          
+          // Update source selector visibility
+          updateSourceSelector(newSeason);
+          
+          loadSeason(newSeason).catch(err => {
             console.error('loadSeason error', err);
           });
         });
       });
+
+      // Initialize source selector for Barbarossa S1
+      function updateSourceSelector(season) {
+        const container = document.getElementById('source-selector-container');
+        if (!container) return;
+
+        const showSelector = (slug === 'barbarossa' || slug === 'barbarossa-brothers') && season === '1';
+        
+        if (showSelector) {
+          container.style.display = 'block';
+          container.innerHTML = `
+            <div class="source-selector">
+              <button class="source-btn active" data-source="1">Source 1</button>
+              <button class="source-btn" data-source="2">Source 2</button>
+            </div>
+          `;
+          
+          // Add click handlers
+          container.querySelectorAll('.source-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+              currentSource = parseInt(this.dataset.source);
+              
+              // Update button states
+              container.querySelectorAll('.source-btn').forEach(b => b.classList.remove('active'));
+              this.classList.add('active');
+              
+              // Reload episodes with new source
+              toast(`Loading Source ${currentSource}...`);
+              loadSeason(season).catch(err => {
+                console.error('Source switch error', err);
+                toast('Failed to load source');
+              });
+            });
+          });
+        } else {
+          container.style.display = 'none';
+          container.innerHTML = '';
+          currentSource = 1; // Reset to default
+        }
+      }
+
+      // Initial source selector setup
+      updateSourceSelector(seasonQuery);
 
       // initial load (keep at top)
       await loadSeason(seasonQuery);
@@ -202,10 +287,16 @@
         wrap.innerHTML = `<div style="color:#ddd;padding:12px 0;">Loading episodes...</div>`;
 
         try {
+          // Use special Barbarossa fetch if applicable
+          const isBarbarossaSpecial = (slug === 'barbarossa' || slug === 'barbarossa-brothers') && season === '1';
+          
           const { episodes, tried } = await (async () => {
             try {
-              const res = await fetchEpisodesWithCandidates(season);
-              return { episodes: res.episodes, tried: res.tried || [] };
+              if (isBarbarossaSpecial) {
+                return await fetchBarbarossaEpisodes(season, currentSource);
+              } else {
+                return await fetchEpisodesWithCandidates(season);
+              }
             } catch (err) {
               throw err;
             }
@@ -251,7 +342,6 @@
           if (scroller) {
             const items = Array.from(scroller.querySelectorAll('.reveal-item'));
             items.forEach((it, i) => {
-              // small stagger; leaving layout stable so no jumps
               setTimeout(() => {
                 try { it.classList.add('show'); } catch(e){}
               }, 60 + i * 26);
@@ -264,32 +354,31 @@
             wrap.style.minHeight = prevMin;
           }, 360);
 
-          // do NOT auto-scroll. caller (initial load) already handled top-of-page.
         } catch (err) {
-  let errorMsg = 'No episodes found';
-  let details = '';
-  
-  if (err && err.tried && err.tried.length > 0) {
-    const lastTried = err.tried[err.tried.length - 1];
-    if (lastTried.err && lastTried.err.includes('json-parse')) {
-      errorMsg = 'JSON file has syntax error';
-      details = `Check file: ${lastTried.path}`;
-    } else if (!lastTried.ok) {
-      errorMsg = 'Episode file not found';
-      details = `Looking for: ${lastTried.path}`;
-    }
-  }
-  
-  wrap.innerHTML = `
-    <div style="background:#1a1f2e;color:#fff;padding:18px;border-radius:12px;border:1px solid #ff6b6b;">
-      <div style="font-size:16px;font-weight:700;color:#ff6b6b;margin-bottom:8px;">⚠️ ${errorMsg}</div>
-      ${details ? `<div style="font-size:13px;color:#aaa;font-family:monospace;">${details}</div>` : ''}
-    </div>
-  `;
-  
-  console.error('Episode load error:', err);
-  wrap.classList.remove('is-loading');
-  wrap.style.minHeight = prevMin;
+          let errorMsg = 'No episodes found';
+          let details = '';
+          
+          if (err && err.tried && err.tried.length > 0) {
+            const lastTried = err.tried[err.tried.length - 1];
+            if (lastTried.err && lastTried.err.includes('json-parse')) {
+              errorMsg = 'JSON file has syntax error';
+              details = `Check file: ${lastTried.path}`;
+            } else if (!lastTried.ok) {
+              errorMsg = 'Episode file not found';
+              details = `Looking for: ${lastTried.path}`;
+            }
+          }
+          
+          wrap.innerHTML = `
+            <div style="background:#1a1f2e;color:#fff;padding:18px;border-radius:12px;border:1px solid #ff6b6b;">
+              <div style="font-size:16px;font-weight:700;color:#ff6b6b;margin-bottom:8px;">⚠️ ${errorMsg}</div>
+              ${details ? `<div style="font-size:13px;color:#aaa;font-family:monospace;">${details}</div>` : ''}
+            </div>
+          `;
+          
+          console.error('Episode load error:', err);
+          wrap.classList.remove('is-loading');
+          wrap.style.minHeight = prevMin;
         }
       }
 
