@@ -1,9 +1,10 @@
-// episode.js (drop-in)
+// episode.js (with Barbarossa Source 2 support)
 
 const params = new URLSearchParams(window.location.search);
 const slug = params.get('series');
 const season = params.get('season');
 const epNum = params.get('ep');
+const source = params.get('source'); // NEW: Get source parameter
 const container = document.getElementById('episode-view') || document.body;
 
 if (!slug || !epNum) {
@@ -13,7 +14,14 @@ if (!slug || !epNum) {
 
 let jsonFile, backUrl;
 if (season) {
-  jsonFile = `episode-data/${slug}-s${season}.json`;
+  // Check if this is Barbarossa S1 Source 2
+  const isBarbarossaS1Source2 = slug === 'barbarossa' && season === '1' && source === '2';
+  
+  // Use source2 JSON file for Barbarossa S1 Source 2, otherwise use default
+  jsonFile = isBarbarossaS1Source2 
+    ? `episode-data/${slug}-s${season}-source2.json`
+    : `episode-data/${slug}-s${season}.json`;
+  
   backUrl = `series.html?series=${slug}&season=${season}`;
 } else {
   jsonFile = `episode-data/${slug}.json`;
