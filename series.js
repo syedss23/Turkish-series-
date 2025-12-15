@@ -257,10 +257,15 @@
           }
 
           const cardsHtml = episodes.map(ep => {
-            const epNum = escapeHtml(String(ep.ep || ''));
-            const epTitle = escapeHtml(ep.title || ('Episode ' + epNum));
-            const thumb = escapeHtml(ep.thumb || 'default-thumb.jpg');
-            const episodeUrl = `episode.html?series=${encodeURIComponent(slug)}&season=${encodeURIComponent(season)}&ep=${encodeURIComponent(ep.ep)}${lang?('&lang='+encodeURIComponent(lang)) : ''}`;
+  const epNum = escapeHtml(String(ep.ep || ''));
+  const epTitle = escapeHtml(ep.title || ('Episode ' + epNum));
+  const thumb = escapeHtml(ep.thumb || 'default-thumb.jpg');
+  
+  // Add source parameter ONLY for Barbarossa S1 Source 2
+  const isBarbarossaS1Source2 = slug === 'barbarossa' && season === '1' && currentSource === 2;
+  const sourceParam = isBarbarossaS1Source2 ? '&source=2' : '';
+  
+  const episodeUrl = `episode.html?series=${encodeURIComponent(slug)}&season=${encodeURIComponent(season)}&ep=${encodeURIComponent(ep.ep)}${lang?('&lang='+encodeURIComponent(lang)) : ''}${sourceParam}`;
             return `
               <a class="pro-episode-card-pro reveal-item" href="${episodeUrl}" tabindex="-1" aria-label="${epTitle}">
                 <div class="pro-ep-thumb-wrap-pro">
