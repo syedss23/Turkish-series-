@@ -205,7 +205,7 @@
             Join our sponsor channel to unlock 3 episodes for 24 hours
           </p>
 
-          <!-- Main unlock button (original flow) -->
+          <!-- Main unlock button -->
           <a href="https://t.me/+OKnw3z4Uq28wYzRk"
              target="_blank"
              rel="noopener noreferrer"
@@ -270,11 +270,11 @@
     const howtoVideoWrap = document.getElementById('howtoVideoWrap');
     const closeHowtoInlineBtn = document.getElementById('closeHowtoInlineBtn');
 
-    // Small fullscreen hint/button (we'll show the functional button instead)
+    // Small fullscreen hint/button
     const howtoFullscreenHint = document.getElementById('howtoFullscreenHint');
 
     // Rumble embed URL
-    const rumbleEmbedUrl = 'https://rumble.com/embed/v7018ms/?pub=4ni0h4';
+    const rumbleEmbedUrl = 'https://rumble.com/embed/v703dzq/?pub=4ni0h4';
 
     // Get episode info from URL
     const urlParams = new URLSearchParams(window.location.search);
@@ -284,8 +284,7 @@
 
     if (!slug || !season || !ep) {
       console.error('Missing episode parameters');
-      // still show the popup in case you want to debug, but we'll stop here for safety
-      // return;
+      // return; // keep popup visible for debugging if needed
     }
 
     if (ep) episodeNumber.textContent = ep;
@@ -335,28 +334,44 @@
       }
     }
 
-    // Unlock click logic (keeps your double-click verify flow)
+    // ---------- Unlock click logic – first click opens Telegram, second click only unlocks ----------
     let isProcessing = false;
+    let hasUnlocked = false;
+
     unlockBtn.addEventListener('click', function(e) {
-      if (isProcessing) {
-        if (btnText.innerHTML.includes('Tap to Watch')) {
-          const unlockKey = 'unlocked_' + slug + '_s' + season + '_e' + currentEp;
-          const unlockTimeKey = unlockKey + '_time';
-          localStorage.setItem(unlockKey, 'true');
-          localStorage.setItem(unlockTimeKey, Date.now().toString());
-          popup.style.display = 'none';
-          if (typeof gtag !== 'undefined') {
-            gtag('event', 'episode_unlock_complete', {
-              'episode': (slug||'') + '_s' + (season||'') + 'e' + (ep||''),
-              'unlocks_count': 3
-            });
-          }
+      const ep1 = currentEp;
+      const ep2 = currentEp + 1;
+      const ep3 = currentEp + 2;
+
+      // Second (and later) clicks – don't open Telegram again
+      if (hasUnlocked) {
+        e.preventDefault(); // stop opening sponsor channel again
+
+        const unlockKey = 'unlocked_' + slug + '_s' + season + '_e' + currentEp;
+        const unlockTimeKey = unlockKey + '_time';
+        localStorage.setItem(unlockKey, 'true');
+        localStorage.setItem(unlockTimeKey, Date.now().toString());
+
+        popup.style.display = 'none';
+
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'episode_unlock_complete', {
+            'episode': (slug || '') + '_s' + (season || '') + 'e' + (ep || ''),
+            'unlocks_count': 3
+          });
         }
         return;
       }
 
-      // First click: simulate verify
+      // While "Checking..." – block spam taps and extra telegram tabs
+      if (isProcessing) {
+        e.preventDefault();
+        return;
+      }
+
+      // First click: let Telegram open (no preventDefault) + start verification
       isProcessing = true;
+
       unlockBtn.style.opacity = '0.6';
       unlockBtn.style.pointerEvents = 'none';
       btnText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
@@ -365,20 +380,19 @@
 
       if (typeof gtag !== 'undefined') {
         gtag('event', 'episode_unlock_attempt', {
-          'episode': (slug||'') + '_s' + (season||'') + 'e' + (ep||'')
+          'episode': (slug || '') + '_s' + (season || '') + 'e' + (ep || '')
         });
       }
 
       setTimeout(function() {
+        isProcessing = false;
+        hasUnlocked = true; // now second click is "Tap to Watch"
+
         unlockBtn.style.opacity = '1';
         unlockBtn.style.pointerEvents = 'auto';
         unlockBtn.style.cursor = 'pointer';
         unlockBtn.style.background = 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)';
         unlockBtn.style.boxShadow = '0 12px 28px rgba(17,153,142,0.8), 0 0 32px rgba(56,239,125,1)';
-
-        const ep1 = currentEp;
-        const ep2 = currentEp + 1;
-        const ep3 = currentEp + 2;
 
         btnText.innerHTML = '<i class="fas fa-check-circle"></i> Unlocked! Tap to Watch';
         popupTitle.textContent = 'Successfully Unlocked!';
@@ -388,7 +402,7 @@
 
         if (typeof gtag !== 'undefined') {
           gtag('event', 'episode_unlock_verified', {
-            'episode': (slug||'') + '_s' + (season||'') + 'e' + (ep||''),
+            'episode': (slug || '') + '_s' + (season || '') + 'e' + (ep || ''),
             'unlocked_episodes': ep1 + ',' + ep2 + ',' + ep3
           });
         }
