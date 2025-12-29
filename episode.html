@@ -293,60 +293,12 @@
           const config = await response.json();
           featureConfig = config.redirectionFeatures;
           console.log('Popup config loaded:', featureConfig);
-          updatePopupContent();
         } else {
           featureConfig = { shortlink: false, sponsorPopup: true };
-          updatePopupContent();
         }
       } catch (error) {
         console.warn('Config load error:', error);
         featureConfig = { shortlink: false, sponsorPopup: true };
-        updatePopupContent();
-      }
-    }
-
-    // UPDATE POPUP CONTENT BASED ON CONFIG
-    function updatePopupContent() {
-      if (!featureConfig) return;
-
-      const ep1 = currentEp;
-      const ep2 = currentEp + 1;
-      const ep3 = currentEp + 2;
-
-      // When shortlink is ON (sponsor popup OFF) - Show premium message
-      if (featureConfig.shortlink && !featureConfig.sponsorPopup) {
-        sponsorSection.innerHTML = `
-          <h3>🌟 Want Ad-Free Access?</h3>
-          
-          <p class="unlock-message" style="color:#e8f4f8;margin:12px 4px 18px;font-size:14px;">
-            For <b>direct episodes</b> without ads or shortlinks, join our <strong>Premium Channel</strong>!<br>
-            Get instant access to all episodes.<br><br>
-            <span style="color:#ffb3b3;font-size:12px;">📌 <b>Note:</b> Some episodes' <b>Download Server 2</b> links have expired.<br>Please use <b>Download Server 1</b> for reliable downloads.</span>
-          </p>
-
-          <a href="https://t.me/itzmezain1/2905"
-             target="_blank"
-             rel="noopener noreferrer"
-             class="unlock-btn"
-             style="background:linear-gradient(135deg,#099c7d,#06d6a0);box-shadow:0 12px 28px rgba(6,214,160,0.7),0 0 26px rgba(6,214,160,0.9);">
-            <i class="fas fa-star"></i>
-            <span>Join Premium Channel</span>
-          </a>
-        `;
-        
-        // Update header for premium
-        popupTitle.textContent = 'Premium Access Available';
-        popupSubtitle.textContent = 'Get ad-free direct episodes';
-        lockIcon.textContent = '🌟';
-        
-      } 
-      // When sponsor popup is ON - Show FX Reall Academy sponsor
-      else if (!featureConfig.shortlink && featureConfig.sponsorPopup) {
-        // Keep existing sponsor HTML (already in page)
-        unlockMessage.textContent = `📺 Unlock to watch episodes ${ep1}, ${ep2}, and ${ep3} for 24 hours`;
-        popupSubtitle.textContent = `Unlock 3 episodes starting from ${ep1}`;
-        popupTitle.textContent = 'Unlock Episode';
-        lockIcon.textContent = '🔒';
       }
     }
 
@@ -376,14 +328,25 @@
     async function init() {
       await loadConfig();
 
-      // Show popup if locked
-      if (!isEpisodeAccessible(currentEp)) {
-        setTimeout(function() { popup.style.display = 'block'; }, 500);
+      // ONLY show popup if sponsor popup mode is ON and episode is locked
+      if (featureConfig && featureConfig.sponsorPopup && !featureConfig.shortlink) {
+        if (!isEpisodeAccessible(currentEp)) {
+          setTimeout(function() { popup.style.display = 'block'; }, 500);
+        } else {
+          if (typeof gtag !== 'undefined') {
+            gtag('event', 'episode_watch', {
+              'episode': (slug||'') + '_s' + (season||'') + 'e' + (ep||''),
+              'access_type': 'unlocked'
+            });
+          }
+        }
       } else {
+        // Shortlink mode - no popup at all
+        console.log('Shortlink mode active - popup disabled');
         if (typeof gtag !== 'undefined') {
           gtag('event', 'episode_watch', {
             'episode': (slug||'') + '_s' + (season||'') + 'e' + (ep||''),
-            'access_type': 'unlocked'
+            'access_type': 'shortlink_direct'
           });
         }
       }
@@ -391,87 +354,83 @@
 
     init();
 
-    // ---------- Unlock click logic ----------
+    // ---------- Unlock click logic (only for sponsor popup mode) ----------
     let isProcessing = false;
     let hasUnlocked = false;
 
-    unlockBtn.addEventListener('click', function(e) {
-      // If premium message, just open link
-      if (featureConfig && featureConfig.shortlink) {
-        if (typeof gtag !== 'undefined') {
-          gtag('event', 'premium_channel_click', {
-            'episode': (slug||'') + '_s' + (season||'') + 'e' + (ep||'')
-          });
+    if (unlockBtn) {
+      unlockBtn.addEventListener('click', function(e) {
+        // Only work if sponsor popup mode
+        if (!featureConfig || !featureConfig.sponsorPopup) {
+          return;
         }
-        return; // Let default link behavior work
-      }
 
-      // Sponsor unlock flow
-      const ep1 = currentEp;
-      const ep2 = currentEp + 1;
-      const ep3 = currentEp + 2;
+        const ep1 = currentEp;
+        const ep2 = currentEp + 1;
+        const ep3 = currentEp + 2;
 
-      if (hasUnlocked) {
-        e.preventDefault();
+        if (hasUnlocked) {
+          e.preventDefault();
 
-        const unlockKey = 'unlocked_' + slug + '_s' + season + '_e' + currentEp;
-        const unlockTimeKey = unlockKey + '_time';
-        localStorage.setItem(unlockKey, 'true');
-        localStorage.setItem(unlockTimeKey, Date.now().toString());
+          const unlockKey = 'unlocked_' + slug + '_s' + season + '_e' + currentEp;
+          const unlockTimeKey = unlockKey + '_time';
+          localStorage.setItem(unlockKey, 'true');
+          localStorage.setItem(unlockTimeKey, Date.now().toString());
 
-        popup.style.display = 'none';
+          popup.style.display = 'none';
 
-        if (typeof gtag !== 'undefined') {
-          gtag('event', 'episode_unlock_complete', {
-            'episode': (slug || '') + '_s' + (season || '') + 'e' + (ep || ''),
-            'unlocks_count': 3
-          });
+          if (typeof gtag !== 'undefined') {
+            gtag('event', 'episode_unlock_complete', {
+              'episode': (slug || '') + '_s' + (season || '') + 'e' + (ep || ''),
+              'unlocks_count': 3
+            });
+          }
+          return;
         }
-        return;
-      }
 
-      if (isProcessing) {
-        e.preventDefault();
-        return;
-      }
+        if (isProcessing) {
+          e.preventDefault();
+          return;
+        }
 
-      isProcessing = true;
-      unlockBtn.style.opacity = '0.6';
-      unlockBtn.style.pointerEvents = 'none';
-      btnText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
-      popupTitle.textContent = 'Verifying Membership...';
-      lockIcon.textContent = '⏳';
-
-      if (typeof gtag !== 'undefined') {
-        gtag('event', 'episode_unlock_attempt', {
-          'episode': (slug || '') + '_s' + (season || '') + 'e' + (ep || '')
-        });
-      }
-
-      setTimeout(function() {
-        isProcessing = false;
-        hasUnlocked = true;
-
-        unlockBtn.style.opacity = '1';
-        unlockBtn.style.pointerEvents = 'auto';
-        unlockBtn.style.cursor = 'pointer';
-        unlockBtn.style.background = 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)';
-        unlockBtn.style.boxShadow = '0 12px 28px rgba(17,153,142,0.8), 0 0 32px rgba(56,239,125,1)';
-
-        btnText.innerHTML = '<i class="fas fa-check-circle"></i> Unlocked! Tap to Watch';
-        popupTitle.textContent = 'Successfully Unlocked!';
-        popupSubtitle.textContent = `Episodes ${ep1}-${ep3} available for 24h`;
-        lockIcon.textContent = '✅';
-        unlockMessage.textContent = `🎉 Episodes ${ep1}, ${ep2}, and ${ep3} are now free for 24 hours!`;
+        isProcessing = true;
+        unlockBtn.style.opacity = '0.6';
+        unlockBtn.style.pointerEvents = 'none';
+        btnText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
+        popupTitle.textContent = 'Verifying Membership...';
+        lockIcon.textContent = '⏳';
 
         if (typeof gtag !== 'undefined') {
-          gtag('event', 'episode_unlock_verified', {
-            'episode': (slug || '') + '_s' + (season || '') + 'e' + (ep || ''),
-            'unlocked_episodes': ep1 + ',' + ep2 + ',' + ep3
+          gtag('event', 'episode_unlock_attempt', {
+            'episode': (slug || '') + '_s' + (season || '') + 'e' + (ep || '')
           });
         }
-      }, 15000);
-    });
+
+        setTimeout(function() {
+          isProcessing = false;
+          hasUnlocked = true;
+
+          unlockBtn.style.opacity = '1';
+          unlockBtn.style.pointerEvents = 'auto';
+          unlockBtn.style.cursor = 'pointer';
+          unlockBtn.style.background = 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)';
+          unlockBtn.style.boxShadow = '0 12px 28px rgba(17,153,142,0.8), 0 0 32px rgba(56,239,125,1)';
+
+          btnText.innerHTML = '<i class="fas fa-check-circle"></i> Unlocked! Tap to Watch';
+          popupTitle.textContent = 'Successfully Unlocked!';
+          popupSubtitle.textContent = `Episodes ${ep1}-${ep3} available for 24h`;
+          lockIcon.textContent = '✅';
+          unlockMessage.textContent = `🎉 Episodes ${ep1}, ${ep2}, and ${ep3} are now free for 24 hours!`;
+
+          if (typeof gtag !== 'undefined') {
+            gtag('event', 'episode_unlock_verified', {
+              'episode': (slug || '') + '_s' + (season || '') + 'e' + (ep || ''),
+              'unlocked_episodes': ep1 + ',' + ep2 + ',' + ep3
+            });
+          }
+        }, 15000);
+      });
+    }
 
     // ---------- Inline how-to handlers ----------
     function openHowtoInline() {
