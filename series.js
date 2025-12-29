@@ -1,4 +1,4 @@
-// series.js - WITH FEATURE TOGGLE SYSTEM
+// series.js - WITH FEATURE TOGGLE SYSTEM AND SHORTLINK REDIRECTION
 (function () {
   'use strict';
 
@@ -9,8 +9,9 @@
 
   let currentSource = 1;
   let featureConfig = null; // Store loaded config
+  let currentEpisodesData = []; // Store episode data for shortlink checking
 
-  const HOWTO_PROCESS_1 = `<iframe class="rumble" width="640" height="360" src="https://rumble.com/embed/v703dzq/?pub=4ni0h4" frameborder="0" allowfullscreen></iframe>`;
+  const HOWTO_PROCESS_1 = `<iframe class="rumble" width="640" height="360" src="https://rumble.com/embed/v6yg466/?pub=4ni0h4" frameborder="0" allowfullscreen></iframe>`;
   const HOWTO_PROCESS_2 = `<iframe class="rumble" width="640" height="360" src="https://rumble.com/embed/v6yg45g/?pub=4ni0h4" frameborder="0" allowfullscreen></iframe>`;
 
   // LOAD CONFIG.JSON AT START
@@ -31,20 +32,7 @@
     }
   }
 
-  // GENERATE SHORTLINK ID (Customize this based on your shortlink pattern)
-  function generateShortlinkId(seriesSlug, season, episode) {
-    // Example patterns - customize based on your actual shortlink structure:
-    // Pattern 1: slug-s1e1 format
-    // return seriesSlug + '-s' + season + 'e' + episode;
-    
-    // Pattern 2: Different format for different series
-    // if (seriesSlug === 'barbarossa') return 'barb-' + season + '-' + episode;
-    
-    // For now, return placeholder - YOU NEED TO ADD YOUR ACTUAL SHORTLINK IDs
-    return 'SHORTLINK_ID_HERE';
-  }
-
-  // HANDLE EPISODE CLICK WITH FEATURE TOGGLE
+  // HANDLE EPISODE CLICK WITH FEATURE TOGGLE AND SHORTLINK CHECK
   function handleEpisodeClick(event, episodeData) {
     event.preventDefault();
     
@@ -56,45 +44,51 @@
     const { seriesSlug, season, episode, lang, source } = episodeData;
 
     // Check which feature is enabled
-    if (featureConfig.shortlink) {
-      // SHORTLINK REDIRECTION
-      const shortlinkId = generateShortlinkId(seriesSlug, season, episode);
-      const shortlinkUrl = 'https://short.ink/' + shortlinkId;
+    if (featureConfig.shortlink && !featureConfig.sponsorPopup) {
+      // SHORTLINK MODE: Check if episode has shortlink in JSON
+      const episodeObj = currentEpisodesData.find(ep => String(ep.ep) === String(episode));
       
-      // Track with Google Analytics
-      if (typeof gtag !== 'undefined') {
-        gtag('event', 'shortlink_redirect', {
-          'episode': seriesSlug + '_s' + season + 'e' + episode,
-          'redirect_url': shortlinkUrl
-        });
+      if (episodeObj && episodeObj.shortlink) {
+        // Episode has shortlink - redirect to it
+        console.log('Redirecting to shortlink:', episodeObj.shortlink);
+        
+        // Track with Google Analytics
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'shortlink_redirect', {
+            'episode': seriesSlug + '_s' + season + 'e' + episode,
+            'shortlink_url': episodeObj.shortlink
+          });
+        }
+        
+        window.location.href = episodeObj.shortlink;
+        return;
+      } else {
+        // No shortlink found - open episode.html directly
+        console.log('No shortlink found, opening episode page directly');
       }
-      
-      console.log('Redirecting to shortlink:', shortlinkUrl);
-      window.location.href = shortlinkUrl;
-      
-    } else if (featureConfig.sponsorPopup) {
-      // SPONSOR POPUP (Go to episode.html)
-      let episodeUrl = `episode.html?series=${encodeURIComponent(seriesSlug)}&season=${encodeURIComponent(season)}&ep=${encodeURIComponent(episode)}`;
-      
-      if (lang) {
-        episodeUrl += '&lang=' + encodeURIComponent(lang);
-      }
-      
-      if (source) {
-        episodeUrl += '&source=' + encodeURIComponent(source);
-      }
-      
-      // Track with Google Analytics
-      if (typeof gtag !== 'undefined') {
-        gtag('event', 'episode_page_visit', {
-          'episode': seriesSlug + '_s' + season + 'e' + episode,
-          'access_type': 'sponsor_popup'
-        });
-      }
-      
-      console.log('Opening episode page:', episodeUrl);
-      window.location.href = episodeUrl;
     }
+
+    // DEFAULT: SPONSOR POPUP MODE or NO SHORTLINK - Go to episode.html
+    let episodeUrl = `episode.html?series=${encodeURIComponent(seriesSlug)}&season=${encodeURIComponent(season)}&ep=${encodeURIComponent(episode)}`;
+    
+    if (lang) {
+      episodeUrl += '&lang=' + encodeURIComponent(lang);
+    }
+    
+    if (source) {
+      episodeUrl += '&source=' + encodeURIComponent(source);
+    }
+    
+    // Track with Google Analytics
+    if (typeof gtag !== 'undefined') {
+      gtag('event', 'episode_page_visit', {
+        'episode': seriesSlug + '_s' + season + 'e' + episode,
+        'access_type': featureConfig.sponsorPopup ? 'sponsor_popup' : 'direct'
+      });
+    }
+    
+    console.log('Opening episode page:', episodeUrl);
+    window.location.href = episodeUrl;
   }
 
   function bust(url) {
@@ -336,6 +330,9 @@
             : await fetchEpisodesWithCandidates(season);
 
           const episodes = result.episodes;
+
+          // STORE EPISODES DATA FOR SHORTLINK CHECKING
+          currentEpisodesData = episodes;
 
           if (!Array.isArray(episodes) || episodes.length === 0) {
             wrap.innerHTML = `<div style="color:#fff;padding:28px 0 0 0;">No episodes for this season.</div>`;
