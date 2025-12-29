@@ -1,4 +1,4 @@
-// series.js - COMPLETE WORKING VERSION
+// series.js - WITH FEATURE TOGGLE SYSTEM
 (function () {
   'use strict';
 
@@ -8,9 +8,94 @@
   const seasonQuery = qs.get('season') || '1';
 
   let currentSource = 1;
+  let featureConfig = null; // Store loaded config
 
   const HOWTO_PROCESS_1 = `<iframe class="rumble" width="640" height="360" src="https://rumble.com/embed/v703dzq/?pub=4ni0h4" frameborder="0" allowfullscreen></iframe>`;
   const HOWTO_PROCESS_2 = `<iframe class="rumble" width="640" height="360" src="https://rumble.com/embed/v6yg45g/?pub=4ni0h4" frameborder="0" allowfullscreen></iframe>`;
+
+  // LOAD CONFIG.JSON AT START
+  async function loadFeatureConfig() {
+    try {
+      const response = await fetch('/config.json', { cache: 'no-cache' });
+      if (response.ok) {
+        const config = await response.json();
+        featureConfig = config.redirectionFeatures;
+        console.log('Feature config loaded:', featureConfig);
+      } else {
+        console.warn('config.json not found, defaulting to sponsor popup');
+        featureConfig = { shortlink: false, sponsorPopup: true };
+      }
+    } catch (error) {
+      console.warn('Error loading config.json:', error);
+      featureConfig = { shortlink: false, sponsorPopup: true };
+    }
+  }
+
+  // GENERATE SHORTLINK ID (Customize this based on your shortlink pattern)
+  function generateShortlinkId(seriesSlug, season, episode) {
+    // Example patterns - customize based on your actual shortlink structure:
+    // Pattern 1: slug-s1e1 format
+    // return seriesSlug + '-s' + season + 'e' + episode;
+    
+    // Pattern 2: Different format for different series
+    // if (seriesSlug === 'barbarossa') return 'barb-' + season + '-' + episode;
+    
+    // For now, return placeholder - YOU NEED TO ADD YOUR ACTUAL SHORTLINK IDs
+    return 'SHORTLINK_ID_HERE';
+  }
+
+  // HANDLE EPISODE CLICK WITH FEATURE TOGGLE
+  function handleEpisodeClick(event, episodeData) {
+    event.preventDefault();
+    
+    if (!featureConfig) {
+      console.error('Config not loaded yet');
+      return;
+    }
+
+    const { seriesSlug, season, episode, lang, source } = episodeData;
+
+    // Check which feature is enabled
+    if (featureConfig.shortlink) {
+      // SHORTLINK REDIRECTION
+      const shortlinkId = generateShortlinkId(seriesSlug, season, episode);
+      const shortlinkUrl = 'https://short.ink/' + shortlinkId;
+      
+      // Track with Google Analytics
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'shortlink_redirect', {
+          'episode': seriesSlug + '_s' + season + 'e' + episode,
+          'redirect_url': shortlinkUrl
+        });
+      }
+      
+      console.log('Redirecting to shortlink:', shortlinkUrl);
+      window.location.href = shortlinkUrl;
+      
+    } else if (featureConfig.sponsorPopup) {
+      // SPONSOR POPUP (Go to episode.html)
+      let episodeUrl = `episode.html?series=${encodeURIComponent(seriesSlug)}&season=${encodeURIComponent(season)}&ep=${encodeURIComponent(episode)}`;
+      
+      if (lang) {
+        episodeUrl += '&lang=' + encodeURIComponent(lang);
+      }
+      
+      if (source) {
+        episodeUrl += '&source=' + encodeURIComponent(source);
+      }
+      
+      // Track with Google Analytics
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'episode_page_visit', {
+          'episode': seriesSlug + '_s' + season + 'e' + episode,
+          'access_type': 'sponsor_popup'
+        });
+      }
+      
+      console.log('Opening episode page:', episodeUrl);
+      window.location.href = episodeUrl;
+    }
+  }
 
   function bust(url) {
     const v = (qs.get('v') || '1');
@@ -108,6 +193,9 @@
 
   (async function init() {
     try {
+      // LOAD CONFIG FIRST
+      await loadFeatureConfig();
+
       if (document.readyState !== 'complete') {
         await new Promise(r => window.addEventListener('load', r, { once: true }));
       }
@@ -257,17 +345,24 @@
           }
 
           const cardsHtml = episodes.map(ep => {
-  const epNum = escapeHtml(String(ep.ep || ''));
-  const epTitle = escapeHtml(ep.title || ('Episode ' + epNum));
-  const thumb = escapeHtml(ep.thumb || 'default-thumb.jpg');
-  
-  // Add source parameter ONLY for Barbarossa S1 Source 2
-  const isBarbarossaS1Source2 = slug === 'barbarossa' && season === '1' && currentSource === 2;
-  const sourceParam = isBarbarossaS1Source2 ? '&source=2' : '';
-  
-  const episodeUrl = `episode.html?series=${encodeURIComponent(slug)}&season=${encodeURIComponent(season)}&ep=${encodeURIComponent(ep.ep)}${lang?('&lang='+encodeURIComponent(lang)) : ''}${sourceParam}`;
+            const epNum = escapeHtml(String(ep.ep || ''));
+            const epTitle = escapeHtml(ep.title || ('Episode ' + epNum));
+            const thumb = escapeHtml(ep.thumb || 'default-thumb.jpg');
+            
+            // Determine source parameter
+            const isBarbarossaS1Source2 = slug === 'barbarossa' && season === '1' && currentSource === 2;
+            const sourceParam = isBarbarossaS1Source2 ? currentSource : null;
+            
             return `
-              <a class="pro-episode-card-pro reveal-item" href="${episodeUrl}" tabindex="-1" aria-label="${epTitle}">
+              <a class="pro-episode-card-pro reveal-item" 
+                 href="#" 
+                 data-series="${escapeHtml(slug)}"
+                 data-season="${escapeHtml(season)}"
+                 data-episode="${epNum}"
+                 data-lang="${escapeHtml(lang)}"
+                 data-source="${sourceParam || ''}"
+                 tabindex="-1" 
+                 aria-label="${epTitle}">
                 <div class="pro-ep-thumb-wrap-pro">
                   <img class="pro-ep-thumb-pro" src="${thumb}" alt="${epTitle}">
                   <span class="pro-ep-num-pro">Ep ${epNum}</span>
@@ -286,6 +381,20 @@
           `;
 
           wrap.innerHTML = `<div class="pro-episodes-row-pro" role="list">${cardsHtml}</div>` + tutorialBlock;
+
+          // ADD CLICK HANDLERS TO EPISODE CARDS
+          const episodeCards = wrap.querySelectorAll('.pro-episode-card-pro');
+          episodeCards.forEach(card => {
+            card.addEventListener('click', function(e) {
+              handleEpisodeClick(e, {
+                seriesSlug: this.dataset.series,
+                season: this.dataset.season,
+                episode: this.dataset.episode,
+                lang: this.dataset.lang || null,
+                source: this.dataset.source || null
+              });
+            });
+          });
 
           const scroller = wrap.querySelector('.pro-episodes-row-pro');
           if (scroller) {
